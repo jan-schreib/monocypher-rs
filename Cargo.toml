@@ -1,0 +1,12 @@
+[package]
+name = "monocypher"
+version = "0.1.0"
+authors = ["jan"]
+
+[dependencies]
+libc = "0.2.36"
+hex = "0.3.1"
+
+[dependencies.monocypher-sys]
+path = "./monocypher_sys"
+version = "0.1.0"
