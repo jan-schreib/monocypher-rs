@@ -1,3 +1,5 @@
+//! Blake2b hash function
+
 use ffi;
 use libc::size_t;
 use std::mem;
