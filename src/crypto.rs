@@ -23,18 +23,19 @@ pub fn wipe(secret: &mut [u8]) {
 
 pub fn lock(key: [u8; 32], nonce: [u8; 24], plain_text: &[u8]) -> (Vec<u8>, [u8; 16]) {
     unsafe {
-        let mut cipher_text: Vec<u8> = Vec::with_capacity(plain_text.len());
+        let mut cipher_text = vec![0u8; plain_text.len()];
         let mut mac: [u8; 16] = mem::uninitialized();
         ffi::crypto_lock(mac.as_mut_ptr(), cipher_text.as_mut_ptr(),
                          key.as_ptr(), nonce.as_ptr(),
                          plain_text.as_ptr(), plain_text.len());
+
         (cipher_text, mac)
     }
 }
 
 pub fn unlock(key: [u8; 32], nonce: [u8; 24], mac: [u8; 16], cipher_text: &[u8]) -> Result<Vec<u8>, String> {
     unsafe {
-        let mut plain_text: Vec<u8> = Vec::with_capacity(cipher_text.len());
+        let mut plain_text  = vec![0u8; cipher_text.len()];
         if ffi::crypto_unlock(plain_text.as_mut_ptr(), key.as_ptr(),
                            nonce.as_ptr(), mac.as_ptr(),
                            cipher_text.as_ptr(), cipher_text.len()) == 0 {
@@ -44,9 +45,9 @@ pub fn unlock(key: [u8; 32], nonce: [u8; 24], mac: [u8; 16], cipher_text: &[u8])
     }
 }
 
-pub fn aead_lock(key: [u8; 32], nonce: [u8; 24], ad: &[u8], plain_text: &[u8]) -> (Vec<u8>, [u8; 16]) {
+pub fn aead_lock(plain_text: &[u8], key: [u8; 32], nonce: [u8; 24], ad: &[u8]) -> (Vec<u8>, [u8; 16]) {
     unsafe {
-        let mut cipher_text: Vec<u8> = Vec::with_capacity(plain_text.len());
+        let mut cipher_text = vec![0u8; plain_text.len()];
         let mut mac: [u8; 16] = mem::uninitialized();
         ffi::crypto_aead_lock(mac.as_mut_ptr(), cipher_text.as_mut_ptr(),
                               key.as_ptr(), nonce.as_ptr(),
@@ -56,9 +57,9 @@ pub fn aead_lock(key: [u8; 32], nonce: [u8; 24], ad: &[u8], plain_text: &[u8]) -
     }
 }
 
-pub fn aead_unlock(key: [u8; 32], nonce: [u8; 24], mac: [u8; 16], ad: &[u8], cipher_text: &[u8]) -> Result<Vec<u8>, String> {
+pub fn aead_unlock(cipher_text: &[u8], key: [u8; 32], nonce: [u8; 24], mac: [u8; 16], ad: &[u8]) -> Result<Vec<u8>, String> {
     unsafe {
-        let mut plain_text: Vec<u8> = Vec::with_capacity(cipher_text.len());
+        let mut plain_text: Vec<u8> = vec![0u8; cipher_text.len()];
         if ffi::crypto_aead_unlock(plain_text.as_mut_ptr(), key.as_ptr(),
                                    nonce.as_ptr(), mac.as_ptr(),
                                    ad.as_ptr(), ad.len(),

@@ -25,7 +25,7 @@ impl ChaCha20 {
 
     #[inline]
     pub fn encrypt(&mut self, plain_text: &[u8]) -> Vec<u8> {
-        let mut cipher_text : Vec<u8> = Vec::with_capacity(plain_text.len());
+        let mut cipher_text = vec![0u8; plain_text.len()];
         unsafe {
             ffi::crypto_chacha20_encrypt(&mut self.0, cipher_text.as_mut_ptr(),
                                          plain_text.as_ptr(), plain_text.len());
