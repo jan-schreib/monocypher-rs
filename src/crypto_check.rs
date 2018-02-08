@@ -1,3 +1,5 @@
+//! Public key signature functions
+
 use ffi;
 use std::mem;
 

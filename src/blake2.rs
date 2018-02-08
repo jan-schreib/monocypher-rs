@@ -4,10 +4,22 @@ use ffi;
 use libc::size_t;
 use std::mem;
 
+///#Example
+///```
+///use monocypher::blake2::blake2b;
+///
+///let hash = blake2b("tohash".as_bytes());
+///```
 pub fn blake2b(data: &[u8]) -> [u8; 64] {
     blake2b_general(data, "".as_bytes())
 }
 
+///#Example
+///```
+///use monocypher::blake2::blake2b_general;
+///
+///let hash = blake2b_general("tohash".as_bytes(), "key".as_bytes());
+///```
 pub fn blake2b_general(data: &[u8], key: &[u8]) -> [u8; 64] {
     unsafe {
         let mut hash:[u8; 64] = mem::uninitialized();
@@ -20,6 +32,14 @@ pub fn blake2b_general(data: &[u8], key: &[u8]) -> [u8; 64] {
 
 pub struct Blake2b(ffi::crypto_blake2b_ctx);
 
+/// #Example
+///```
+///use monocypher::blake2::Blake2b;
+///
+///let mut ctx = Blake2b::new("tohash".as_bytes());
+///ctx.update("moretohash".as_bytes());
+///let hash = ctx.finish();
+///```
 impl Blake2b {
     #[inline]
     pub fn new(key: &[u8]) -> Blake2b {

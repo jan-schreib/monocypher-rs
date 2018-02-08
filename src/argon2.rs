@@ -1,3 +1,5 @@
+//! Argon2 key derivation function
+
 use ffi;
 use std::mem;
 use libc;

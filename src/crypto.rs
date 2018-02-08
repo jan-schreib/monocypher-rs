@@ -1,7 +1,25 @@
+//! Authenticated encryption w/o additional data, constant time verification
+//! and memory wipe functions.
+
 use ffi;
 use std::os::raw::c_void;
 use std::mem;
 
+/// This function handles input length of 16, 32 and 64 bytes.
+/// If the input length differs from that, false will be returned.
+/// If the input length differ from each other, false will be returned.
+///
+///#Example
+///
+///```
+///use monocypher::crypto::verify;
+///
+///if verify("one".as_bytes(), "one".as_bytes()) {
+///    //continue
+///} else {
+///    //abort
+///}
+///```
 pub fn verify(a: &[u8], b: &[u8]) -> bool {
     if a.len() != b.len() {
         return false
@@ -15,13 +33,34 @@ pub fn verify(a: &[u8], b: &[u8]) -> bool {
     }
 }
 
+/// This functions wipes a memory region.
+///
+///#Example
+///```
+///use monocypher::crypto::wipe;
+///
+///let mut secret: [u8; 16] = [255; 16];
+///wipe(&mut secret);
+///```
 pub fn wipe(secret: &mut [u8]) {
     unsafe {
         ffi::crypto_wipe(secret.as_mut_ptr() as *mut c_void, secret.len())
     }
 }
 
-pub fn lock(key: [u8; 32], nonce: [u8; 24], plain_text: &[u8]) -> (Vec<u8>, [u8; 16]) {
+///Encrypt and authenticate plaintext data.
+///
+///#Example
+///```
+///use monocypher::crypto::lock;
+///
+///let plaintext = "plaintext";
+///let key = [137u8; 32];
+///let nonce = [120u8; 24];
+///
+///let cymac = lock(plaintext.as_bytes(), key, nonce);
+///```
+pub fn lock(plain_text: &[u8], key: [u8; 32], nonce: [u8; 24]) -> (Vec<u8>, [u8; 16]) {
     unsafe {
         let mut cipher_text = vec![0u8; plain_text.len()];
         let mut mac: [u8; 16] = mem::uninitialized();
@@ -33,7 +72,20 @@ pub fn lock(key: [u8; 32], nonce: [u8; 24], plain_text: &[u8]) -> (Vec<u8>, [u8;
     }
 }
 
-pub fn unlock(key: [u8; 32], nonce: [u8; 24], mac: [u8; 16], cipher_text: &[u8]) -> Result<Vec<u8>, String> {
+///Decrypt encrypted data.
+///
+///#Example
+///```
+///use monocypher::crypto::{lock, unlock};
+///
+///let plaintext = "plaintext";
+///let key = [137u8; 32];
+///let nonce = [120u8; 24];
+///
+///let cymac = lock(plaintext.as_bytes(), key, nonce);
+///unlock(&cymac.0, key, nonce, cymac.1).unwrap();
+///```
+pub fn unlock(cipher_text: &[u8], key: [u8; 32], nonce: [u8; 24], mac: [u8; 16]) -> Result<Vec<u8>, String> {
     unsafe {
         let mut plain_text  = vec![0u8; cipher_text.len()];
         if ffi::crypto_unlock(plain_text.as_mut_ptr(), key.as_ptr(),

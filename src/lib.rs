@@ -1,3 +1,10 @@
+//! [Monocypher](https://monocypher.org) is a cryptographic library.
+//!
+//! It provides functions for authenticated encryption, hashing, password key derivation,
+//! key exchange, and public key signatures.
+//!
+//! Visit the official [documentation](https://monocypher.org/manual/) for details.
+
 extern crate libc;
 extern crate monocypher_sys as ffi;
 extern crate hex;

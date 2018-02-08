@@ -1,3 +1,5 @@
+//! Incremental public key signatures
+
 use ffi;
 use std::mem;
 

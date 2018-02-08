@@ -1,3 +1,5 @@
+//! Poly1305 one-time message authentication codes
+
 use ffi;
 use std::mem;
 
