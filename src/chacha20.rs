@@ -58,9 +58,10 @@ pub fn chacha20_h(key: [u8; 32], input: [u8; 16]) -> [u8; 32]{
     }
 }
 
+#[cfg(test)]
 mod test {
-    use super::chacha20_h;
 
+    use super::*;
     #[test]
     fn chacha20_h_test() {
         let res: [u8; 32] = [171, 107, 219, 186,  0, 173, 209,  50,

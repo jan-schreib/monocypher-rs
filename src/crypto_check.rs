@@ -16,14 +16,14 @@ impl CryptoCheckCtx {
     }
 
     #[inline]
-    pub fn check_update(&mut self, message: &[u8]) {
+    pub fn update(&mut self, message: &[u8]) {
         unsafe {
             ffi::crypto_check_update(&mut self.0, message.as_ptr(), message.len());
         }
     }
 
     #[inline]
-    pub fn check_final(&mut self) -> Result<(), String> {
+    pub fn finish(&mut self) -> Result<(), String> {
         unsafe {
             if ffi::crypto_check_final(&mut self.0) == 0 {
                 return Ok(())

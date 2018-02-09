@@ -14,13 +14,15 @@ pub fn sign_public_key(secret_key: [u8; 32]) -> [u8; 32] {
 pub fn sign(secret_key: [u8; 32], public_key: [u8; 32], message: &[u8]) {
     unsafe {
         let mut signature: [u8; 64] = mem::uninitialized();
-        ffi::crypto_sign(signature.as_mut_ptr(), secret_key.as_ptr(), public_key.as_ptr(), message.as_ptr(), message.len() as usize);
+        ffi::crypto_sign(signature.as_mut_ptr(), secret_key.as_ptr(), public_key.as_ptr(),
+                         message.as_ptr(), message.len() as usize);
     }
 }
 
 pub fn check(signature: [u8; 64], public_key: [u8; 32], message: &[u8]) -> Result<(), String> {
     unsafe {
-        if ffi::crypto_check(signature.as_ptr(), public_key.as_ptr(), message.as_ptr(), message.len()) == 0 {
+        if ffi::crypto_check(signature.as_ptr(), public_key.as_ptr(),
+                             message.as_ptr(), message.len()) == 0 {
             return Ok(());
         }
         return Err("Forged message detected.".to_owned());

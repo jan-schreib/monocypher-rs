@@ -5,9 +5,10 @@ use ffi;
 use std::os::raw::c_void;
 use std::mem;
 
-/// This function handles input length of 16, 32 and 64 bytes.
-/// If the input length differs from that, false will be returned.
-/// If the input length differ from each other, false will be returned.
+/// Constant time comparison of two equal sized buffers.
+///
+/// The lengths can be 16, 32 or 64. Everything else will return false.
+/// If the length or the buffer content differ false will be returned.
 ///
 ///#Example
 ///
@@ -33,7 +34,7 @@ pub fn verify(a: &[u8], b: &[u8]) -> bool {
     }
 }
 
-/// This functions wipes a memory region.
+/// Clears a memory region.
 ///
 ///#Example
 ///```
@@ -62,7 +63,7 @@ pub fn wipe(secret: &mut [u8]) {
 ///```
 pub fn lock(plain_text: &[u8], key: [u8; 32], nonce: [u8; 24]) -> (Vec<u8>, [u8; 16]) {
     unsafe {
-        let mut cipher_text = vec![0u8; plain_text.len()];
+        let mut cipher_text: Vec<u8>  = vec![0u8; plain_text.len()];
         let mut mac: [u8; 16] = mem::uninitialized();
         ffi::crypto_lock(mac.as_mut_ptr(), cipher_text.as_mut_ptr(),
                          key.as_ptr(), nonce.as_ptr(),
@@ -87,7 +88,7 @@ pub fn lock(plain_text: &[u8], key: [u8; 32], nonce: [u8; 24]) -> (Vec<u8>, [u8;
 ///```
 pub fn unlock(cipher_text: &[u8], key: [u8; 32], nonce: [u8; 24], mac: [u8; 16]) -> Result<Vec<u8>, String> {
     unsafe {
-        let mut plain_text  = vec![0u8; cipher_text.len()];
+        let mut plain_text: Vec<u8>  = vec![0u8; cipher_text.len()];
         if ffi::crypto_unlock(plain_text.as_mut_ptr(), key.as_ptr(),
                            nonce.as_ptr(), mac.as_ptr(),
                            cipher_text.as_ptr(), cipher_text.len()) == 0 {
@@ -96,10 +97,22 @@ pub fn unlock(cipher_text: &[u8], key: [u8; 32], nonce: [u8; 24], mac: [u8; 16])
         Err("Message is corrupted.".to_owned())
     }
 }
-
+///Encrypt and authenticate plaintext with additional data.
+///
+///#Example
+///```
+///use monocypher::crypto::aead_lock;
+///
+///let plaintext = "plaintext";
+///let key = [137u8; 32];
+///let nonce = [120u8; 24];
+///let ad = "data";
+///
+///let cymac = aead_lock(plaintext.as_bytes(), key, nonce, ad.as_bytes());
+///```
 pub fn aead_lock(plain_text: &[u8], key: [u8; 32], nonce: [u8; 24], ad: &[u8]) -> (Vec<u8>, [u8; 16]) {
     unsafe {
-        let mut cipher_text = vec![0u8; plain_text.len()];
+        let mut cipher_text: Vec<u8> = vec![0u8; plain_text.len()];
         let mut mac: [u8; 16] = mem::uninitialized();
         ffi::crypto_aead_lock(mac.as_mut_ptr(), cipher_text.as_mut_ptr(),
                               key.as_ptr(), nonce.as_ptr(),
@@ -108,7 +121,20 @@ pub fn aead_lock(plain_text: &[u8], key: [u8; 32], nonce: [u8; 24], ad: &[u8]) -
         (cipher_text, mac)
     }
 }
-
+///Decrypt ciphertext with additional data.
+///
+///#Example
+///```
+///use monocypher::crypto::{aead_lock, aead_unlock};
+///
+///let plaintext = "plaintext";
+///let key = [137u8; 32];
+///let nonce = [120u8; 24];
+///let ad = "data";
+///
+///let cymac = aead_lock(plaintext.as_bytes(), key, nonce, ad.as_bytes());
+///aead_unlock(&cymac.0, key, nonce, cymac.1, ad.as_bytes()).unwrap();
+///```
 pub fn aead_unlock(cipher_text: &[u8], key: [u8; 32], nonce: [u8; 24], mac: [u8; 16], ad: &[u8]) -> Result<Vec<u8>, String> {
     unsafe {
         let mut plain_text: Vec<u8> = vec![0u8; cipher_text.len()];

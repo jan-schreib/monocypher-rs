@@ -6,6 +6,8 @@ use libc;
 use libc::c_void;
 use std::os::raw;
 
+
+// Allocates the workarea that is used for the argon2i hash function.
 #[inline]
 fn alloc_workarea(size: u32) -> Result<*mut c_void, String> {
     unsafe {
@@ -17,6 +19,13 @@ fn alloc_workarea(size: u32) -> Result<*mut c_void, String> {
     }
 }
 
+///#Example
+///
+///```
+///use monocypher::argon2::argon2i;
+///
+///argon2i("pass".as_bytes(), "salt".as_bytes(), 100000, 3).unwrap();
+///```
 pub fn argon2i(password: &[u8], salt: &[u8], nb_blocks: u32, nb_iterations: u32) -> Result<[u8; 32], String> {
     let work_area = match alloc_workarea(nb_blocks) {
         Ok(wa) => wa,
@@ -37,6 +46,14 @@ pub fn argon2i(password: &[u8], salt: &[u8], nb_blocks: u32, nb_iterations: u32)
     }
 }
 
+///#Example
+///
+///```
+///use monocypher::argon2::argon2i_general;
+///
+///argon2i_general("pass".as_bytes(), "salt".as_bytes(), 100000, 3, "key".as_bytes(),
+///                "ad".as_bytes()).unwrap();
+///```
 pub fn argon2i_general(password: &[u8], salt: &[u8], nb_blocks: u32, nb_iterations: u32, key: &[u8], ad: &[u8]) -> Result<[u8; 32], String> {
     let work_area = match alloc_workarea(nb_blocks) {
         Ok(wa) => wa,

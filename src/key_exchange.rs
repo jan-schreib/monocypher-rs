@@ -21,4 +21,3 @@ pub fn key_exchange_public_key(secret_key: [u8; 32]) -> [u8; 32] {
         public_key
     }
 }
-
