@@ -11,6 +11,7 @@ extern crate hex;
 
 pub mod blake2;
 pub mod crypto_lock;
+pub mod crypto_unlock;
 pub mod crypto_sign;
 pub mod crypto_check;
 pub mod crypto_utils;

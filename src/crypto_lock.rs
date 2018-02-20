@@ -1,5 +1,4 @@
-//! Authenticated encryption w/o additional data, constant time verification
-//! and memory wipe functions.
+//! Authenticated encryption w/o additional data
 
 use ffi;
 use std::mem;
@@ -25,31 +24,6 @@ pub fn lock(plain_text: &[u8], key: [u8; 32], nonce: [u8; 24]) -> (Vec<u8>, [u8;
                          plain_text.as_ptr(), plain_text.len());
 
         (cipher_text, mac)
-    }
-}
-
-///Decrypt encrypted data.
-///
-///#Example
-///```
-///use monocypher::crypto_lock::{lock, unlock};
-///
-///let plaintext = "plaintext";
-///let key = [137u8; 32];
-///let nonce = [120u8; 24];
-///
-///let cymac = lock(plaintext.as_bytes(), key, nonce);
-///unlock(&cymac.0, key, nonce, cymac.1).unwrap();
-///```
-pub fn unlock(cipher_text: &[u8], key: [u8; 32], nonce: [u8; 24], mac: [u8; 16]) -> Result<Vec<u8>, String> {
-    unsafe {
-        let mut plain_text: Vec<u8>  = vec![0u8; cipher_text.len()];
-        if ffi::crypto_unlock(plain_text.as_mut_ptr(), key.as_ptr(),
-                           nonce.as_ptr(), mac.as_ptr(),
-                           cipher_text.as_ptr(), cipher_text.len()) == 0 {
-            return Ok(plain_text);
-        }
-        Err("Message is corrupted.".to_owned())
     }
 }
 
@@ -99,8 +73,6 @@ impl CryptoLockCtx {
     }
 }
 
-
-
 ///Encrypt and authenticate plaintext with additional data.
 ///
 ///#Example
@@ -124,62 +96,4 @@ pub fn aead_lock(plain_text: &[u8], key: [u8; 32], nonce: [u8; 24], ad: &[u8]) -
                               plain_text.as_ptr(), plain_text.len());
         (cipher_text, mac)
     }
-}
-///Decrypt ciphertext with additional data.
-///
-///#Example
-///```
-///use monocypher::crypto_lock::{aead_lock, aead_unlock};
-///
-///let plaintext = "plaintext";
-///let key = [137u8; 32];
-///let nonce = [120u8; 24];
-///let ad = "data";
-///
-///let cymac = aead_lock(plaintext.as_bytes(), key, nonce, ad.as_bytes());
-///aead_unlock(&cymac.0, key, nonce, cymac.1, ad.as_bytes()).unwrap();
-///```
-pub fn aead_unlock(cipher_text: &[u8], key: [u8; 32], nonce: [u8; 24], mac: [u8; 16], ad: &[u8]) -> Result<Vec<u8>, String> {
-    unsafe {
-        let mut plain_text: Vec<u8> = vec![0u8; cipher_text.len()];
-        if ffi::crypto_unlock_aead(plain_text.as_mut_ptr(), key.as_ptr(),
-                                   nonce.as_ptr(), mac.as_ptr(),
-                                   ad.as_ptr(), ad.len(),
-                                   cipher_text.as_ptr(), cipher_text.len()) == 0 {
-                return Ok(plain_text)
-            }
-        Err("Message is corrupted.".to_owned())
-    }
-}
-
-#[cfg(test)]
-mod test {
-    use super::*;
-
-    #[test]
-    fn lock_unlock_test() {
-        let plaintext = "secret";
-        let key: [u8; 32] = [1; 32];
-        let nonce: [u8; 24] = [2; 24];
-
-        let cymac = lock(plaintext.as_bytes(), key, nonce);
-        let clear = unlock(&cymac.0, key, nonce, cymac.1).unwrap();
-
-        assert_eq!(&String::from_utf8(clear).unwrap(), plaintext)
-    }
-
-    #[test]
-    fn aead_lock_unlock_test() {
-        let plaintext = "secret";
-        let ad = "add";
-        let key: [u8; 32] = [1; 32];
-        let nonce: [u8; 24] = [2; 24];
-
-        let cymac = aead_lock(plaintext.as_bytes(), key, nonce, ad.as_bytes());
-        let clear = aead_unlock(&cymac.0, key, nonce, cymac.1, ad.as_bytes()).unwrap();
-
-        assert_eq!(&String::from_utf8(clear).unwrap(), plaintext)
-    }
-
-
 }
