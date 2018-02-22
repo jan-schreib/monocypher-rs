@@ -9,7 +9,7 @@ extern crate libc;
 extern crate monocypher_sys as ffi;
 extern crate hex;
 
-pub mod blake2;
+pub mod blake2b;
 pub mod lock;
 pub mod unlock;
 pub mod sign;

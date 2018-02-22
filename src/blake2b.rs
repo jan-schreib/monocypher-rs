@@ -6,7 +6,7 @@ use std::mem;
 
 ///#Example
 ///```
-///use monocypher::blake2::easy;
+///use monocypher::blake2b::easy;
 ///
 ///let hash = easy("tohash".as_bytes());
 ///```
@@ -16,7 +16,7 @@ pub fn easy(data: &[u8]) -> [u8; 64] {
 
 ///#Example
 ///```
-///use monocypher::blake2::general;
+///use monocypher::blake2b::general;
 ///
 ///let hash = general("tohash".as_bytes(), "key".as_bytes());
 ///```
@@ -34,7 +34,7 @@ pub struct Context(ffi::crypto_blake2b_ctx);
 
 /// #Example
 ///```
-///use monocypher::blake2::Context;
+///use monocypher::blake2b::Context;
 ///
 ///let mut ctx = Context::new("tohash".as_bytes());
 ///ctx.update("moretohash".as_bytes());
