@@ -49,7 +49,7 @@ impl Context {
     }
 
     #[inline]
-    pub fn finish(&mut self) -> [u8; 64] {
+    pub fn finalize(&mut self) -> [u8; 64] {
         unsafe {
             let mut signature: [u8; 64] = mem::uninitialized();
             ffi::crypto_sign_final(&mut self.0, signature.as_mut_ptr());
@@ -58,7 +58,7 @@ impl Context {
     }
 
     #[inline]
-    pub fn init_second_pass(&mut self) {
+    pub fn begin_second_pass(&mut self) {
         unsafe {
             ffi::crypto_sign_init_second_pass(&mut self.0);
         }

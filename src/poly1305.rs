@@ -6,7 +6,7 @@ use ffi;
 use std::mem;
 
 ///Produces a message authentication code for the given message and authentication key.
-pub fn easy(message: &[u8], key: [u8; 32]) -> [u8; 16] {
+pub fn auth(message: &[u8], key: [u8; 32]) -> [u8; 16] {
     unsafe {
         let mut mac: [u8; 16] = mem::uninitialized();
         ffi::crypto_poly1305(mac.as_mut_ptr(), message.as_ptr(), message.len(), key.as_ptr());
@@ -34,7 +34,7 @@ impl Context {
     }
 
     #[inline]
-    pub fn finish(&mut self) -> [u8; 16] {
+    pub fn finalize(&mut self) -> [u8; 16] {
         unsafe {
             let mut mac: [u8; 16] = mem::uninitialized();
             ffi::crypto_poly1305_final(&mut self.0, mac.as_mut_ptr());

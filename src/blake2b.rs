@@ -38,7 +38,7 @@ pub struct Context(ffi::crypto_blake2b_ctx);
 ///
 ///let mut ctx = Context::new("tohash".as_bytes());
 ///ctx.update("moretohash".as_bytes());
-///let hash = ctx.finish();
+///let hash = ctx.finalize();
 ///```
 impl Context {
     #[inline]
@@ -58,7 +58,7 @@ impl Context {
     }
 
     #[inline]
-    pub fn finish(&mut self) -> [u8; 64] {
+    pub fn finalize(&mut self) -> [u8; 64] {
         unsafe {
             let mut hash: [u8; 64] = mem::uninitialized();
             ffi::crypto_blake2b_final(&mut self.0, hash.as_mut_ptr());
@@ -76,7 +76,7 @@ mod test {
     fn blake2b_incremental_test() {
         let mut ctx = Context::new("test".as_bytes());
         ctx.update("TEST".as_bytes());
-        let hash = ctx.finish();
+        let hash = ctx.finalize();
         assert_eq!(hex::encode(hash.to_vec()), "e33ee689585ebe3fc169a845482a47432c21a4134134d2f6c57d06dda4622500e73c79f3ab9d8a3728a7575ebb0f5a78bc6608db427e18cbba1ff6847e3fb6bb");
     }
 

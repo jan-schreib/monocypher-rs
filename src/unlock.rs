@@ -94,7 +94,7 @@ impl Context {
     }
 
     #[inline]
-    pub fn finish(&mut self, mac: [u8; 16]) ->  Result<(), String> {
+    pub fn finalize(&mut self, mac: [u8; 16]) ->  Result<(), String> {
         unsafe {
             if ffi::crypto_unlock_final(&mut self.0, mac.as_ptr()) == 0 {
                 return Ok(());

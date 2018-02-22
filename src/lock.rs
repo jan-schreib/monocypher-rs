@@ -89,7 +89,7 @@ impl Context {
     }
 
     #[inline]
-    pub fn finish(&mut self) -> [u8; 16] {
+    pub fn finalize(&mut self) -> [u8; 16] {
         unsafe {
             let mut mac: [u8; 16] = mem::uninitialized();
             ffi::crypto_lock_final(&mut self.0, mac.as_mut_ptr());

@@ -23,7 +23,7 @@ impl Context {
     }
 
     #[inline]
-    pub fn finish(&mut self) -> Result<(), String> {
+    pub fn finalize(&mut self) -> Result<(), String> {
         unsafe {
             if ffi::crypto_check_final(&mut self.0) == 0 {
                 return Ok(())
