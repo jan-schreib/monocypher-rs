@@ -15,6 +15,7 @@ fn main() {
         // The input header we would like to generate
         // bindings for.
         .header("wrapper.h")
+        .clang_arg("-I/usr/local/include")
         .blacklist_type("max_align_t")
         // Finish the builder and generate the bindings.
         .generate()
