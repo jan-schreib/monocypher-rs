@@ -8,4 +8,4 @@ ToDo:
 - [ ] Unit Tests
 - [ ] Integration Tests
 - [ ] High Level API
-- [ ] Tell the monocypher devs about this
+- [x] Tell the monocypher devs about this
