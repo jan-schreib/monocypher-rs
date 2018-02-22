@@ -1,8 +1,11 @@
 //! Poly1305 one-time message authentication codes
+//! Poly1305 is a one-time message authentication code.
+//! "One-time" means the authentication key can be used only once.
 
 use ffi;
 use std::mem;
 
+///Produces a message authentication code for the given message and authentication key.
 pub fn easy(message: &[u8], key: [u8; 32]) -> [u8; 16] {
     unsafe {
         let mut mac: [u8; 16] = mem::uninitialized();

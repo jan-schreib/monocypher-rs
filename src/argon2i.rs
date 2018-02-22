@@ -52,7 +52,7 @@ pub fn easy(password: &[u8], salt: &[u8], nb_blocks: u32, nb_iterations: u32) ->
 ///use monocypher::argon2i::general;
 ///
 ///general("pass".as_bytes(), "salt".as_bytes(), 100000, 3, "key".as_bytes(),
-///                "ad".as_bytes()).unwrap();
+///        "ad".as_bytes()).unwrap();
 ///```
 pub fn general(password: &[u8], salt: &[u8], nb_blocks: u32, nb_iterations: u32, key: &[u8], ad: &[u8]) -> Result<[u8; 32], String> {
     let work_area = match alloc_workarea(nb_blocks) {

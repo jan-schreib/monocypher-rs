@@ -1,3 +1,5 @@
+//! Util functions for constant time comparison and memory wiping.
+
 use ffi;
 use std::os::raw::c_void;
 
