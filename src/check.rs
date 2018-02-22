@@ -3,15 +3,15 @@
 use ffi;
 use std::mem;
 
-pub struct CryptoCheckCtx(ffi::crypto_check_ctx);
+pub struct Context(ffi::crypto_check_ctx);
 
-impl CryptoCheckCtx {
+impl Context {
     #[inline]
-    pub fn new(signature: [u8; 64], public_key: [u8; 32]) -> CryptoCheckCtx {
+    pub fn new(signature: [u8; 64], public_key: [u8; 32]) -> Context {
         unsafe {
             let mut ctx = mem::uninitialized();
             ffi::crypto_check_init(&mut ctx, signature.as_ptr(), public_key.as_ptr());
-            CryptoCheckCtx(ctx)
+            Context(ctx)
         }
     }
 

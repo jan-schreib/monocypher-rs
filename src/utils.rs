@@ -9,7 +9,7 @@ use std::os::raw::c_void;
 ///#Example
 ///
 ///```
-///use monocypher::crypto_utils::verify;
+///use monocypher::utils::verify;
 ///
 ///if verify("one".as_bytes(), "one".as_bytes()) {
 ///    //continue
@@ -34,7 +34,7 @@ pub fn verify(a: &[u8], b: &[u8]) -> bool {
 ///
 ///#Example
 ///```
-///use monocypher::crypto_utils::wipe;
+///use monocypher::utils::wipe;
 ///
 ///let mut secret: [u8; 16] = [255; 16];
 ///wipe(&mut secret);

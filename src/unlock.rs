@@ -7,17 +7,17 @@ use std::mem;
 ///
 ///#Example
 ///```
-///use monocypher::crypto_lock::lock;
-///use monocypher::crypto_unlock::unlock;
+///use monocypher::lock;
+///use monocypher::unlock;
 ///
 ///let plaintext = "plaintext";
 ///let key = [137u8; 32];
 ///let nonce = [120u8; 24];
 ///
-///let cymac = lock(plaintext.as_bytes(), key, nonce);
-///unlock(&cymac.0, key, nonce, cymac.1).unwrap();
+///let cymac = lock::easy(plaintext.as_bytes(), key, nonce);
+///unlock::easy(&cymac.0, key, nonce, cymac.1).unwrap();
 ///```
-pub fn unlock(cipher_text: &[u8], key: [u8; 32], nonce: [u8; 24], mac: [u8; 16]) -> Result<Vec<u8>, String> {
+pub fn easy(cipher_text: &[u8], key: [u8; 32], nonce: [u8; 24], mac: [u8; 16]) -> Result<Vec<u8>, String> {
     unsafe {
         let mut plain_text: Vec<u8>  = vec![0u8; cipher_text.len()];
         if ffi::crypto_unlock(plain_text.as_mut_ptr(), key.as_ptr(),
@@ -33,18 +33,18 @@ pub fn unlock(cipher_text: &[u8], key: [u8; 32], nonce: [u8; 24], mac: [u8; 16])
 ///
 ///#Example
 ///```
-///use monocypher::crypto_lock::aead_lock;
-///use monocypher::crypto_unlock::aead_unlock;
+///use monocypher::lock;
+///use monocypher::unlock;
 ///
 ///let plaintext = "plaintext";
 ///let key = [137u8; 32];
 ///let nonce = [120u8; 24];
 ///let ad = "data";
 ///
-///let cymac = aead_lock(plaintext.as_bytes(), key, nonce, ad.as_bytes());
-///aead_unlock(&cymac.0, key, nonce, cymac.1, ad.as_bytes()).unwrap();
+///let cymac = lock::aead(plaintext.as_bytes(), key, nonce, ad.as_bytes());
+///unlock::aead(&cymac.0, key, nonce, cymac.1, ad.as_bytes()).unwrap();
 ///```
-pub fn aead_unlock(cipher_text: &[u8], key: [u8; 32], nonce: [u8; 24], mac: [u8; 16], ad: &[u8]) -> Result<Vec<u8>, String> {
+pub fn aead(cipher_text: &[u8], key: [u8; 32], nonce: [u8; 24], mac: [u8; 16], ad: &[u8]) -> Result<Vec<u8>, String> {
     unsafe {
         let mut plain_text: Vec<u8> = vec![0u8; cipher_text.len()];
         if ffi::crypto_unlock_aead(plain_text.as_mut_ptr(), key.as_ptr(),
@@ -57,15 +57,15 @@ pub fn aead_unlock(cipher_text: &[u8], key: [u8; 32], nonce: [u8; 24], mac: [u8;
     }
 }
 
-pub struct CryptoUnlockCtx(ffi::crypto_lock_ctx);
+pub struct Context(ffi::crypto_lock_ctx);
 
-impl CryptoUnlockCtx {
+impl Context {
     #[inline]
-    pub fn new(key: [u8; 32], nonce: [u8; 24]) -> CryptoUnlockCtx {
+    pub fn new(key: [u8; 32], nonce: [u8; 24]) -> Context {
         unsafe {
             let mut ctx = mem::uninitialized();
             ffi::crypto_lock_init(&mut ctx, key.as_ptr(), nonce.as_ptr());
-            CryptoUnlockCtx(ctx)
+            Context(ctx)
         }
     }
 

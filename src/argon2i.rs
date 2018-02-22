@@ -1,4 +1,4 @@
-//! Argon2 key derivation function
+//! Argon2i key derivation function
 
 use ffi;
 use std::mem;
@@ -22,11 +22,11 @@ fn alloc_workarea(size: u32) -> Result<*mut c_void, String> {
 ///#Example
 ///
 ///```
-///use monocypher::argon2::argon2i;
+///use monocypher::argon2i::easy;
 ///
-///argon2i("pass".as_bytes(), "salt".as_bytes(), 100000, 3).unwrap();
+///easy("pass".as_bytes(), "salt".as_bytes(), 100000, 3).unwrap();
 ///```
-pub fn argon2i(password: &[u8], salt: &[u8], nb_blocks: u32, nb_iterations: u32) -> Result<[u8; 32], String> {
+pub fn easy(password: &[u8], salt: &[u8], nb_blocks: u32, nb_iterations: u32) -> Result<[u8; 32], String> {
     let work_area = match alloc_workarea(nb_blocks) {
         Ok(wa) => wa,
         Err(e) => return Err(e),
@@ -49,12 +49,12 @@ pub fn argon2i(password: &[u8], salt: &[u8], nb_blocks: u32, nb_iterations: u32)
 ///#Example
 ///
 ///```
-///use monocypher::argon2::argon2i_general;
+///use monocypher::argon2i::general;
 ///
-///argon2i_general("pass".as_bytes(), "salt".as_bytes(), 100000, 3, "key".as_bytes(),
+///general("pass".as_bytes(), "salt".as_bytes(), 100000, 3, "key".as_bytes(),
 ///                "ad".as_bytes()).unwrap();
 ///```
-pub fn argon2i_general(password: &[u8], salt: &[u8], nb_blocks: u32, nb_iterations: u32, key: &[u8], ad: &[u8]) -> Result<[u8; 32], String> {
+pub fn general(password: &[u8], salt: &[u8], nb_blocks: u32, nb_iterations: u32, key: &[u8], ad: &[u8]) -> Result<[u8; 32], String> {
     let work_area = match alloc_workarea(nb_blocks) {
         Ok(wa) => wa,
         Err(e) => return Err(e),
@@ -82,31 +82,31 @@ mod test {
 
     #[test]
     fn argon2i_test() {
-        let pass = hex::encode(argon2i("pass".as_bytes(), "salt".as_bytes(), 100000, 3).unwrap());
+        let pass = hex::encode(easy("pass".as_bytes(), "salt".as_bytes(), 100000, 3).unwrap());
         assert_eq!(pass, "ddd464eaa16219e5aabec0f7a8bfbd675f1e9ec0663f1b8e8102c7eed2cde478");
     }
 
     #[test]
     fn argon2i_fail_test() {
-        let pass = hex::encode(argon2i("pass".as_bytes(), "tlas".as_bytes(), 100000, 3).unwrap());
+        let pass = hex::encode(easy("pass".as_bytes(), "tlas".as_bytes(), 100000, 3).unwrap());
         assert_ne!(pass, "ddd18e8102c7eed2cde478");
     }
 
     #[test]
     fn argon2i_general_test() {
-        let pass = hex::encode(argon2i_general("pass".as_bytes(), "salt".as_bytes(), 100000, 3, "key".as_bytes(), "ad".as_bytes()).unwrap());
+        let pass = hex::encode(general("pass".as_bytes(), "salt".as_bytes(), 100000, 3, "key".as_bytes(), "ad".as_bytes()).unwrap());
         assert_eq!(pass, "6a49c0b339f0cc721298000f8e4f634fad877d247dae87cd986632a316d17699");
     }
 
     #[test]
     fn argon2i_general_key_fail_test() {
-        let pass = hex::encode(argon2i_general("pass".as_bytes(), "salt".as_bytes(), 100000, 3, "yek".as_bytes(), "ad".as_bytes()).unwrap());
+        let pass = hex::encode(general("pass".as_bytes(), "salt".as_bytes(), 100000, 3, "yek".as_bytes(), "ad".as_bytes()).unwrap());
         assert_ne!(pass, "6a49c0b339f0cc721298000f8e4f634fad877d247dae87cd986632a316d17699");
     }
 
     #[test]
     fn argon2i_general_ad_fail_test() {
-        let pass = hex::encode(argon2i_general("pass".as_bytes(), "salt".as_bytes(), 100000, 3, "key".as_bytes(), "da".as_bytes()).unwrap());
+        let pass = hex::encode(general("pass".as_bytes(), "salt".as_bytes(), 100000, 3, "key".as_bytes(), "da".as_bytes()).unwrap());
         assert_ne!(pass, "6a49c0b339f0cc721298000f8e4f634fad877d247dae87cd986632a316d17699");
     }
 }

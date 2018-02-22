@@ -3,24 +3,33 @@
 use ffi;
 use std::mem;
 
-pub struct ChaCha20(ffi::crypto_chacha_ctx);
+///HChacha20 special-purpose hashing
+pub fn easy(key: [u8; 32], input: [u8; 16]) -> [u8; 32]{
+    unsafe {
+        let mut out: [u8; 32] = mem::uninitialized();
+        ffi::crypto_chacha20_H(out.as_mut_ptr(), key.as_ptr(), input.as_ptr());
+        out
+    }
+}
 
-impl ChaCha20 {
+pub struct Context(ffi::crypto_chacha_ctx);
+
+impl Context {
     #[inline]
-    pub fn new(key: &[u8], nonce: [u8; 8]) -> ChaCha20 {
+    pub fn new(key: &[u8], nonce: [u8; 8]) -> Context {
         unsafe {
             let mut ctx = mem::uninitialized();
             ffi::crypto_chacha20_init(&mut ctx, key.as_ptr(), nonce.as_ptr());
-            ChaCha20(ctx)
+            Context(ctx)
         }
     }
 
     #[inline]
-    pub fn new_x(key: &[u8], nonce: [u8; 24]) -> ChaCha20 {
+    pub fn new_x(key: &[u8], nonce: [u8; 24]) -> Context {
         unsafe {
             let mut ctx = mem::uninitialized();
             ffi::crypto_chacha20_x_init(&mut ctx, key.as_ptr(), nonce.as_ptr());
-            ChaCha20(ctx)
+            Context(ctx)
         }
     }
 
@@ -49,26 +58,16 @@ impl ChaCha20 {
     }
 }
 
-/// HChacha20 special-purpose hashing
-pub fn chacha20_h(key: [u8; 32], input: [u8; 16]) -> [u8; 32]{
-    unsafe {
-        let mut out: [u8; 32] = mem::uninitialized();
-        ffi::crypto_chacha20_H(out.as_mut_ptr(), key.as_ptr(), input.as_ptr());
-        out
-    }
-}
-
 #[cfg(test)]
 mod test {
-
     use super::*;
     #[test]
-    fn chacha20_h_test() {
+    fn easy_test() {
         let res: [u8; 32] = [171, 107, 219, 186,  0, 173, 209,  50,
                              252,  77,  93,  85, 99, 106, 222, 162,
                              122, 140, 150, 228, 61,  93, 186, 251,
                              45,   23, 222, 14, 121, 172, 147, 241];
 
-        assert_eq!(chacha20_h([1u8; 32], [2u8;16]), res)
+        assert_eq!(easy([1u8; 32], [2u8;16]), res)
     }
 }

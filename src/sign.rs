@@ -3,7 +3,7 @@
 use ffi;
 use std::mem;
 
-pub fn sign_public_key(secret_key: [u8; 32]) -> [u8; 32] {
+pub fn public_key(secret_key: [u8; 32]) -> [u8; 32] {
     unsafe {
         let mut public_key: [u8; 32] = mem::uninitialized();
         ffi::crypto_sign_public_key(public_key.as_mut_ptr(), secret_key.as_ptr());
@@ -29,27 +29,27 @@ pub fn check(signature: [u8; 64], public_key: [u8; 32], message: &[u8]) -> Resul
     }
 }
 
-pub struct CryptoSignCtx(ffi::crypto_sign_ctx);
+pub struct Context(ffi::crypto_sign_ctx);
 
-impl CryptoSignCtx {
+impl Context {
     #[inline]
-    pub fn new(secret_key: &str, public_key: &str) -> CryptoSignCtx {
+    pub fn new(secret_key: &str, public_key: &str) -> Context {
         unsafe {
             let mut ctx = mem::uninitialized();
             ffi::crypto_sign_init_first_pass(&mut ctx, secret_key.as_ptr(), public_key.as_ptr());
-            CryptoSignCtx(ctx)
+            Context(ctx)
         }
     }
 
     #[inline]
-    pub fn sign_update(&mut self, message: &[u8]) {
+    pub fn update(&mut self, message: &[u8]) {
         unsafe {
             ffi::crypto_sign_update(&mut self.0, message.as_ptr(), message.len());
         }
     }
 
     #[inline]
-    pub fn sign_final(&mut self) -> [u8; 64] {
+    pub fn finish(&mut self) -> [u8; 64] {
         unsafe {
             let mut signature: [u8; 64] = mem::uninitialized();
             ffi::crypto_sign_final(&mut self.0, signature.as_mut_ptr());
@@ -58,7 +58,7 @@ impl CryptoSignCtx {
     }
 
     #[inline]
-    pub fn sign_init_second_pass(&mut self) {
+    pub fn init_second_pass(&mut self) {
         unsafe {
             ffi::crypto_sign_init_second_pass(&mut self.0);
         }

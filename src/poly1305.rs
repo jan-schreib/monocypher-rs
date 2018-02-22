@@ -3,7 +3,7 @@
 use ffi;
 use std::mem;
 
-pub fn poly1305(message: &[u8], key: [u8; 32]) -> [u8; 16] {
+pub fn easy(message: &[u8], key: [u8; 32]) -> [u8; 16] {
     unsafe {
         let mut mac: [u8; 16] = mem::uninitialized();
         ffi::crypto_poly1305(mac.as_mut_ptr(), message.as_ptr(), message.len(), key.as_ptr());
@@ -11,15 +11,15 @@ pub fn poly1305(message: &[u8], key: [u8; 32]) -> [u8; 16] {
     }
 }
 
-pub struct Poly1305(ffi::crypto_poly1305_ctx);
+pub struct Context(ffi::crypto_poly1305_ctx);
 
-impl Poly1305 {
+impl Context {
     #[inline]
-    pub fn new(key: [u8; 32]) -> Poly1305 {
+    pub fn new(key: [u8; 32]) -> Context {
         unsafe {
             let mut ctx = mem::uninitialized();
             ffi::crypto_poly1305_init(&mut ctx, key.as_ptr());
-            Poly1305(ctx)
+            Context(ctx)
         }
     }
 
