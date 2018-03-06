@@ -4,14 +4,18 @@ use ffi;
 use std::mem;
 
 ///Computes a shared key with your secret key and their public key.
-pub fn shared(secret_key: [u8; 32], their_public_key: [u8; 32]) -> Result<[u8; 32], String>{
+pub fn shared(secret_key: [u8; 32], their_public_key: [u8; 32]) -> Result<[u8; 32], String> {
     unsafe {
         let mut shared_key: [u8; 32] = mem::uninitialized();
-        if ffi::crypto_key_exchange(shared_key.as_mut_ptr(), secret_key.as_ptr(),
-                                    their_public_key.as_ptr()) == 0 {
-            return Ok(shared_key)
+        if ffi::crypto_key_exchange(
+            shared_key.as_mut_ptr(),
+            secret_key.as_ptr(),
+            their_public_key.as_ptr(),
+        ) == 0
+        {
+            return Ok(shared_key);
         }
-        return Err("Their public key is malicious!".to_owned());
+        Err("Their public key is malicious!".to_owned())
     }
 }
 ///Deterministically computes the public key from a random secret key.

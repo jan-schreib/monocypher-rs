@@ -26,9 +26,9 @@ impl Context {
     pub fn finalize(&mut self) -> Result<(), String> {
         unsafe {
             if ffi::crypto_check_final(&mut self.0) == 0 {
-                return Ok(())
+                return Ok(());
             }
-            return Err("Message corrupted, aborting.".to_owned())
+            Err("Message corrupted, aborting.".to_owned())
         }
     }
 }

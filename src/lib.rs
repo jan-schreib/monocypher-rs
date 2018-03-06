@@ -5,9 +5,9 @@
 //!
 //! Visit the official [documentation](https://monocypher.org/manual/) for details.
 
+extern crate hex;
 extern crate libc;
 extern crate monocypher_sys as ffi;
-extern crate hex;
 
 pub mod blake2b;
 pub mod lock;

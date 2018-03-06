@@ -3,8 +3,8 @@
 use ffi;
 use std::mem;
 
-///HChacha20 special-purpose hashing
-pub fn easy(key: [u8; 32], input: [u8; 16]) -> [u8; 32]{
+/// `HChacha20` special-purpose hashing
+pub fn easy(key: [u8; 32], input: [u8; 16]) -> [u8; 32] {
     unsafe {
         let mut out: [u8; 32] = mem::uninitialized();
         ffi::crypto_chacha20_H(out.as_mut_ptr(), key.as_ptr(), input.as_ptr());
@@ -37,9 +37,13 @@ impl Context {
     pub fn encrypt(&mut self, plain_text: &[u8]) -> Vec<u8> {
         let mut cipher_text = vec![0u8; plain_text.len()];
         unsafe {
-            ffi::crypto_chacha20_encrypt(&mut self.0, cipher_text.as_mut_ptr(),
-                                         plain_text.as_ptr(), plain_text.len());
-        cipher_text
+            ffi::crypto_chacha20_encrypt(
+                &mut self.0,
+                cipher_text.as_mut_ptr(),
+                plain_text.as_ptr(),
+                plain_text.len(),
+            );
+            cipher_text
         }
     }
 
@@ -63,11 +67,11 @@ mod test {
     use super::*;
     #[test]
     fn easy_test() {
-        let res: [u8; 32] = [171, 107, 219, 186,  0, 173, 209,  50,
-                             252,  77,  93,  85, 99, 106, 222, 162,
-                             122, 140, 150, 228, 61,  93, 186, 251,
-                             45,   23, 222, 14, 121, 172, 147, 241];
+        let res: [u8; 32] = [
+            171, 107, 219, 186, 0, 173, 209, 50, 252, 77, 93, 85, 99, 106, 222, 162, 122, 140, 150,
+            228, 61, 93, 186, 251, 45, 23, 222, 14, 121, 172, 147, 241,
+        ];
 
-        assert_eq!(easy([1u8; 32], [2u8;16]), res)
+        assert_eq!(easy([1u8; 32], [2u8; 16]), res)
     }
 }

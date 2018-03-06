@@ -21,14 +21,14 @@ use std::os::raw::c_void;
 ///```
 pub fn verify(a: &[u8], b: &[u8]) -> bool {
     if a.len() != b.len() {
-        return false
+        return false;
     }
 
     match a.len() {
-        16 => unsafe { return ffi::crypto_verify16(a.as_ptr(), b.as_ptr()) == 0 },
-        32 => unsafe { return ffi::crypto_verify32(a.as_ptr(), b.as_ptr()) == 0 },
-        64 => unsafe { return ffi::crypto_verify64(a.as_ptr(), b.as_ptr()) == 0 },
-        _ => return false
+        16 => unsafe { ffi::crypto_verify16(a.as_ptr(), b.as_ptr()) == 0 },
+        32 => unsafe { ffi::crypto_verify32(a.as_ptr(), b.as_ptr()) == 0 },
+        64 => unsafe { ffi::crypto_verify64(a.as_ptr(), b.as_ptr()) == 0 },
+        _ => false,
     }
 }
 
@@ -42,9 +42,7 @@ pub fn verify(a: &[u8], b: &[u8]) -> bool {
 ///wipe(&mut secret);
 ///```
 pub fn wipe(secret: &mut [u8]) {
-    unsafe {
-        ffi::crypto_wipe(secret.as_mut_ptr() as *mut c_void, secret.len())
-    }
+    unsafe { ffi::crypto_wipe(secret.as_mut_ptr() as *mut c_void, secret.len()) }
 }
 
 #[cfg(test)]

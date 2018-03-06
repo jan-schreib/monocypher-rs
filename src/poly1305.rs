@@ -9,7 +9,12 @@ use std::mem;
 pub fn auth(message: &[u8], key: [u8; 32]) -> [u8; 16] {
     unsafe {
         let mut mac: [u8; 16] = mem::uninitialized();
-        ffi::crypto_poly1305(mac.as_mut_ptr(), message.as_ptr(), message.len(), key.as_ptr());
+        ffi::crypto_poly1305(
+            mac.as_mut_ptr(),
+            message.as_ptr(),
+            message.len(),
+            key.as_ptr(),
+        );
         mac
     }
 }
@@ -42,4 +47,3 @@ impl Context {
         }
     }
 }
-

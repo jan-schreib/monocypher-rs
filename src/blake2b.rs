@@ -11,7 +11,7 @@ use std::mem;
 ///let hash = easy("tohash".as_bytes());
 ///```
 pub fn easy(data: &[u8]) -> [u8; 64] {
-    general(data, "".as_bytes())
+    general(data, b"")
 }
 
 ///#Example
@@ -22,10 +22,15 @@ pub fn easy(data: &[u8]) -> [u8; 64] {
 ///```
 pub fn general(data: &[u8], key: &[u8]) -> [u8; 64] {
     unsafe {
-        let mut hash:[u8; 64] = mem::uninitialized();
-        ffi::crypto_blake2b_general(hash.as_mut_ptr(), 64 as size_t,
-                                    key.as_ptr(), key.len() as size_t,
-                                    data.as_ptr(), data.len() as size_t);
+        let mut hash: [u8; 64] = mem::uninitialized();
+        ffi::crypto_blake2b_general(
+            hash.as_mut_ptr(),
+            64 as size_t,
+            key.as_ptr(),
+            key.len() as size_t,
+            data.as_ptr(),
+            data.len() as size_t,
+        );
         hash
     }
 }
