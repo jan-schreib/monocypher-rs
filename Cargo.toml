@@ -1,9 +1,9 @@
 [package]
 name = "monocypher"
-version = "0.1.0"
+version = "0.1.1"
 authors = ["js@ciphron.de"]
 description = "Bindings for the monocypher C library"
-documentation = "https://docs.rs/monocypher/"
+documentation = "https://cphrn.github.io/doc/monocypher/index.html"
 license = "ISC"
 homepage = "https://www.ciphron.de"
 repository = "https://github.com/cphrn/monocypher"
