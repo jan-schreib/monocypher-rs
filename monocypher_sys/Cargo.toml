@@ -1,7 +1,11 @@
 [package]
 name = "monocypher-sys"
-version = "0.1.0"
-authors = ["jan"]
+version = "1.0.0"
+authors = ["js@ciphron.de"]
+description = "Bindgen generated bindings to the monocypher C library"
+homepage = "https://monocypher.org"
+keywords = ["api-bindings", "cryptography"]
+license = "ISC"
 
 [build-dependencies]
 bindgen = "0.32.3"
