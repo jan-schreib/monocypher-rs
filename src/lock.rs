@@ -3,18 +3,19 @@
 use ffi;
 use std::mem;
 
-///Encrypt and authenticate plaintext data.
+/// Encrypt and authenticate plaintext data.
 ///
-///#Example
-///```
-///use monocypher::lock::easy;
+/// # Example
 ///
-///let plaintext = "plaintext";
-///let key = [137u8; 32];
-///let nonce = [120u8; 24];
+/// ```
+/// use monocypher::lock::easy;
 ///
-///let cymac = easy(plaintext.as_bytes(), key, nonce);
-///```
+/// let plaintext = "plaintext";
+/// let key = [137u8; 32];
+/// let nonce = [120u8; 24];
+///
+/// let cymac = easy(plaintext.as_bytes(), key, nonce);
+/// ```
 pub fn easy(plain_text: &[u8], key: [u8; 32], nonce: [u8; 24]) -> (Vec<u8>, [u8; 16]) {
     unsafe {
         let mut cipher_text: Vec<u8> = vec![0u8; plain_text.len()];
@@ -32,19 +33,20 @@ pub fn easy(plain_text: &[u8], key: [u8; 32], nonce: [u8; 24]) -> (Vec<u8>, [u8;
     }
 }
 
-///Encrypt and authenticate plaintext with additional data.
+/// Encrypt and authenticate plaintext with additional data.
 ///
-///#Example
-///```
-///use monocypher::lock::aead;
+/// # Example
 ///
-///let plaintext = "plaintext";
-///let key = [137u8; 32];
-///let nonce = [120u8; 24];
-///let ad = "data";
+/// ```
+/// use monocypher::lock::aead;
 ///
-///let cymac = aead(plaintext.as_bytes(), key, nonce, ad.as_bytes());
-///```
+/// let plaintext = "plaintext";
+/// let key = [137u8; 32];
+/// let nonce = [120u8; 24];
+/// let ad = "data";
+///
+/// let cymac = aead(plaintext.as_bytes(), key, nonce, ad.as_bytes());
+/// ```
 pub fn aead(plain_text: &[u8], key: [u8; 32], nonce: [u8; 24], ad: &[u8]) -> (Vec<u8>, [u8; 16]) {
     unsafe {
         let mut cipher_text: Vec<u8> = vec![0u8; plain_text.len()];

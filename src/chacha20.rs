@@ -4,6 +4,14 @@ use ffi;
 use std::mem;
 
 /// `HChacha20` special-purpose hashing
+///
+/// # Example
+///
+/// ```
+/// use monocypher::chacha20::easy;
+///
+/// easy([42u8; 32], [123u8; 16]);
+/// ```
 pub fn easy(key: [u8; 32], input: [u8; 16]) -> [u8; 32] {
     unsafe {
         let mut out: [u8; 32] = mem::uninitialized();

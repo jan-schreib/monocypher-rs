@@ -8,17 +8,17 @@ use std::os::raw::c_void;
 /// The lengths can be 16, 32 or 64. Everything else will return false.
 /// If the length or the buffer content differ false will be returned.
 ///
-///#Example
+/// # Example
 ///
-///```
-///use monocypher::utils::verify;
+/// ```
+/// use monocypher::utils::verify;
 ///
-///if verify("one".as_bytes(), "one".as_bytes()) {
-///    //continue
-///} else {
-///    //abort
-///}
-///```
+/// if verify("one".as_bytes(), "one".as_bytes()) {
+///     //continue
+/// } else {
+///     //abort
+/// }
+/// ```
 pub fn verify(a: &[u8], b: &[u8]) -> bool {
     if a.len() != b.len() {
         return false;
@@ -34,13 +34,14 @@ pub fn verify(a: &[u8], b: &[u8]) -> bool {
 
 /// Clears a memory region.
 ///
-///#Example
-///```
-///use monocypher::utils::wipe;
+/// # Example
 ///
-///let mut secret: [u8; 16] = [255; 16];
-///wipe(&mut secret);
-///```
+/// ```
+/// use monocypher::utils::wipe;
+///
+/// let mut secret: [u8; 16] = [255; 16];
+/// wipe(&mut secret);
+/// ```
 pub fn wipe(secret: &mut [u8]) {
     unsafe { ffi::crypto_wipe(secret.as_mut_ptr() as *mut c_void, secret.len()) }
 }

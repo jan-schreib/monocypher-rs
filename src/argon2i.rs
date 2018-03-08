@@ -3,14 +3,13 @@
 use ffi;
 use std::mem;
 use libc;
-use libc::c_void;
 use std::os::raw;
 
 // Allocates the workarea that is used for the argon2i hash function.
 #[inline]
-fn alloc_workarea(size: u32) -> Result<*mut c_void, String> {
+fn alloc_workarea(size: u32) -> Result<*mut libc::c_void, String> {
     unsafe {
-        let work_area: *mut c_void = libc::malloc((size * 1024) as usize) as *mut c_void;
+        let work_area: *mut libc::c_void = libc::malloc((size * 1024) as usize) as *mut libc::c_void;
         if work_area.is_null() {
             return Err("Failed to allocated needed memory.".to_owned());
         }
@@ -18,13 +17,13 @@ fn alloc_workarea(size: u32) -> Result<*mut c_void, String> {
     }
 }
 
-///#Example
+/// # Example
 ///
-///```
-///use monocypher::argon2i::easy;
+/// ```
+/// use monocypher::argon2i::easy;
 ///
-///easy("pass".as_bytes(), "salt".as_bytes(), 100000, 3).unwrap();
-///```
+/// easy("pass".as_bytes(), "salt".as_bytes(), 100000, 3).unwrap();
+/// ```
 pub fn easy(
     password: &[u8],
     salt: &[u8],
@@ -56,14 +55,14 @@ pub fn easy(
     }
 }
 
-///#Example
+/// # Example
 ///
-///```
-///use monocypher::argon2i::general;
+/// ```
+/// use monocypher::argon2i::general;
 ///
-///general("pass".as_bytes(), "salt".as_bytes(), 100000, 3, "key".as_bytes(),
+/// general("pass".as_bytes(), "salt".as_bytes(), 100000, 3, "key".as_bytes(),
 ///        "ad".as_bytes()).unwrap();
-///```
+/// ```
 pub fn general(
     password: &[u8],
     salt: &[u8],

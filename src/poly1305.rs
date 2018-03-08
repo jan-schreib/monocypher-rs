@@ -5,7 +5,7 @@
 use ffi;
 use std::mem;
 
-///Produces a message authentication code for the given message and authentication key.
+/// Produces a message authentication code for the given message and authentication key.
 pub fn auth(message: &[u8], key: [u8; 32]) -> [u8; 16] {
     unsafe {
         let mut mac: [u8; 16] = mem::uninitialized();

@@ -3,20 +3,21 @@
 use ffi;
 use std::mem;
 
-///Decrypt encrypted data.
+/// Decrypt encrypted data.
 ///
-///#Example
-///```
-///use monocypher::lock;
-///use monocypher::unlock;
+/// # Example
 ///
-///let plaintext = "plaintext";
-///let key = [137u8; 32];
-///let nonce = [120u8; 24];
+/// ```
+/// use monocypher::lock;
+/// use monocypher::unlock;
 ///
-///let cymac = lock::easy(plaintext.as_bytes(), key, nonce);
-///unlock::easy(&cymac.0, key, nonce, cymac.1).unwrap();
-///```
+/// let plaintext = "plaintext";
+/// let key = [137u8; 32];
+/// let nonce = [120u8; 24];
+///
+/// let cymac = lock::easy(plaintext.as_bytes(), key, nonce);
+/// unlock::easy(&cymac.0, key, nonce, cymac.1).unwrap();
+/// ```
 pub fn easy(
     cipher_text: &[u8],
     key: [u8; 32],
@@ -40,21 +41,22 @@ pub fn easy(
     }
 }
 
-///Decrypt ciphertext with additional data.
+/// Decrypt ciphertext with additional data.
 ///
-///#Example
-///```
-///use monocypher::lock;
-///use monocypher::unlock;
+/// # Example
 ///
-///let plaintext = "plaintext";
-///let key = [137u8; 32];
-///let nonce = [120u8; 24];
-///let ad = "data";
+/// ```
+/// use monocypher::lock;
+/// use monocypher::unlock;
 ///
-///let cymac = lock::aead(plaintext.as_bytes(), key, nonce, ad.as_bytes());
-///unlock::aead(&cymac.0, key, nonce, cymac.1, ad.as_bytes()).unwrap();
-///```
+/// let plaintext = "plaintext";
+/// let key = [137u8; 32];
+/// let nonce = [120u8; 24];
+/// let ad = "data";
+///
+/// let cymac = lock::aead(plaintext.as_bytes(), key, nonce, ad.as_bytes());
+/// unlock::aead(&cymac.0, key, nonce, cymac.1, ad.as_bytes()).unwrap();
+/// ```
 pub fn aead(
     cipher_text: &[u8],
     key: [u8; 32],
