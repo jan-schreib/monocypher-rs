@@ -4,6 +4,8 @@ use ffi;
 use libc::size_t;
 use std::mem;
 
+/// Simple function to hash the input data.
+///
 /// # Example
 ///
 /// ```
@@ -15,6 +17,9 @@ pub fn easy(data: &[u8]) -> [u8; 64] {
     general(data, b"")
 }
 
+
+/// Function to hash the input data with an additional key.
+///
 /// # Example
 ///
 /// ```
@@ -39,6 +44,8 @@ pub fn general(data: &[u8], key: &[u8]) -> [u8; 64] {
 
 pub struct Context(ffi::crypto_blake2b_ctx);
 
+/// Context based hashing for e.g. large inputs.
+///
 /// # Example
 ///
 /// ```

@@ -1,9 +1,11 @@
 //! Chacha20 encryption functions
+//!
+//! Use the lock functions for authenticated encryption.
 
 use ffi;
 use std::mem;
 
-/// `HChacha20` special-purpose hashing
+/// Simple encryption function.
 ///
 /// # Example
 ///
@@ -22,6 +24,7 @@ pub fn easy(key: [u8; 32], input: [u8; 16]) -> [u8; 32] {
 
 pub struct Context(ffi::crypto_chacha_ctx);
 
+/// These functions provide an incremental interface for the Chacha20 encryption primitive.
 impl Context {
     #[inline]
     pub fn new(key: &[u8], nonce: [u8; 8]) -> Context {

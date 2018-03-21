@@ -17,6 +17,8 @@ fn alloc_workarea(size: u32) -> Result<*mut libc::c_void, String> {
     }
 }
 
+/// Simple function to derive a key from a password.
+///
 /// # Example
 ///
 /// ```
@@ -55,6 +57,8 @@ pub fn easy(
     }
 }
 
+/// Function to derive a key from a password with additional data.
+///
 /// # Example
 ///
 /// ```
