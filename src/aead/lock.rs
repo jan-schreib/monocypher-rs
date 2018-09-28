@@ -8,7 +8,7 @@ use std::mem;
 /// # Example
 ///
 /// ```
-/// use monocypher::lock::easy;
+/// use monocypher::aead::lock::easy;
 ///
 /// let plaintext = "plaintext";
 /// let key = [137u8; 32];
@@ -38,7 +38,7 @@ pub fn easy(plain_text: &[u8], key: [u8; 32], nonce: [u8; 24]) -> (Vec<u8>, [u8;
 /// # Example
 ///
 /// ```
-/// use monocypher::lock::aead;
+/// use monocypher::aead::lock::aead;
 ///
 /// let plaintext = "plaintext";
 /// let key = [137u8; 32];
@@ -112,5 +112,23 @@ impl Context {
             ffi::crypto_lock_final(&mut self.0, mac.as_mut_ptr());
             mac
         }
+    }
+}
+
+#[cfg(test)]
+mod test {
+    use super::*;
+
+    #[test]
+    fn ctx_test() {
+        let key = [2u8; 32];
+        let nonce = [1u8; 24];
+
+        let mut ctx = Context::new(key, nonce);
+        ctx.auth_ad("data".as_bytes());
+        ctx.update("test".as_bytes());
+        let ret = ctx.finalize();
+
+        assert_eq!(ret, [242, 64, 42, 164, 160, 49, 172, 240, 33, 52, 132, 23, 171, 222, 221, 253])
     }
 }

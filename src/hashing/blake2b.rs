@@ -1,4 +1,6 @@
 //! Blake2b hash function
+//!
+//! [Official documentation](https://monocypher.org/manual/hash)
 
 use ffi;
 use libc::size_t;
@@ -9,7 +11,7 @@ use std::mem;
 /// # Example
 ///
 /// ```
-/// use monocypher::blake2b::easy;
+/// use monocypher::hashing::blake2b::easy;
 ///
 /// let hash = easy("tohash".as_bytes());
 /// ```
@@ -23,7 +25,7 @@ pub fn easy(data: &[u8]) -> [u8; 64] {
 /// # Example
 ///
 /// ```
-/// use monocypher::blake2b::general;
+/// use monocypher::hashing::blake2b::general;
 ///
 /// let hash = general("tohash".as_bytes(), "key".as_bytes());
 /// ```
@@ -49,7 +51,7 @@ pub struct Context(ffi::crypto_blake2b_ctx);
 /// # Example
 ///
 /// ```
-/// use monocypher::blake2b::Context;
+/// use monocypher::hashing::blake2b::Context;
 ///
 /// let mut ctx = Context::new("tohash".as_bytes());
 /// ctx.update("moretohash".as_bytes());

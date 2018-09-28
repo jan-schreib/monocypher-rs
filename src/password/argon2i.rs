@@ -1,17 +1,19 @@
 //! Argon2i key derivation function
+//!
+//! [Official documentation](https://monocypher.org/manual/argon2i)
 
 use ffi;
 use std::mem;
 use libc;
 use std::os::raw;
 
-// Allocates the workarea that is used for the argon2i hash function.
+// Allocates the workarea that is used for the argon2i key derivation function.
 #[inline]
 fn alloc_workarea(size: u32) -> Result<*mut libc::c_void, String> {
     unsafe {
-        let work_area: *mut libc::c_void = libc::malloc((size * 1024) as usize) as *mut libc::c_void;
+        let work_area: *mut libc::c_void = libc::calloc(1024, size as usize) as *mut libc::c_void;
         if work_area.is_null() {
-            return Err("Failed to allocated needed memory.".to_owned());
+            return Err("Failed to allocate needed memory.".to_owned());
         }
         Ok(work_area)
     }
@@ -22,7 +24,7 @@ fn alloc_workarea(size: u32) -> Result<*mut libc::c_void, String> {
 /// # Example
 ///
 /// ```
-/// use monocypher::argon2i::easy;
+/// use monocypher::password::argon2i::easy;
 ///
 /// easy("pass".as_bytes(), "salt".as_bytes(), 100000, 3).unwrap();
 /// ```
@@ -62,7 +64,7 @@ pub fn easy(
 /// # Example
 ///
 /// ```
-/// use monocypher::argon2i::general;
+/// use monocypher::password::argon2i::general;
 ///
 /// general("pass".as_bytes(), "salt".as_bytes(), 100000, 3, "key".as_bytes(),
 ///        "ad".as_bytes()).unwrap();
@@ -175,5 +177,23 @@ mod test {
             pass,
             "6a49c0b339f0cc721298000f8e4f634fad877d247dae87cd986632a316d17699"
         );
+    }
+
+    #[test]
+    fn workarea_zero_test() {
+        let wa = alloc_workarea(0);
+        assert_eq!(wa.is_ok(), true);
+        unsafe {
+            libc::free(wa.unwrap());
+        }
+    }
+
+    #[test]
+    fn workarea_max_test() {
+        let wa = alloc_workarea(u32::max_value());
+        assert_eq!(wa.is_ok(), true);
+        unsafe {
+            libc::free(wa.unwrap());
+        }
     }
 }

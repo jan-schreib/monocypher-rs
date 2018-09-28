@@ -8,8 +8,7 @@ use std::mem;
 /// # Example
 ///
 /// ```
-/// use monocypher::lock;
-/// use monocypher::unlock;
+/// use monocypher::aead::{lock, unlock};
 ///
 /// let plaintext = "plaintext";
 /// let key = [137u8; 32];
@@ -46,8 +45,7 @@ pub fn easy(
 /// # Example
 ///
 /// ```
-/// use monocypher::lock;
-/// use monocypher::unlock;
+/// use monocypher::aead::{lock, unlock};
 ///
 /// let plaintext = "plaintext";
 /// let key = [137u8; 32];

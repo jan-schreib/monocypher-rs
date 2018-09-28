@@ -1,6 +1,7 @@
-//! Poly1305 one-time message authentication codes
 //! Poly1305 is a one-time message authentication code.
-//! "One-time" means the authentication key can be used only once.
+//! The authentication key can be used only once!
+//!
+//! [Official documentation](https://monocypher.org/manual/advanced/poly1305)
 
 use ffi;
 use std::mem;
@@ -47,5 +48,29 @@ impl Context {
             ffi::crypto_poly1305_final(&mut self.0, mac.as_mut_ptr());
             mac
         }
+    }
+}
+
+#[cfg(test)]
+mod test {
+    use super::*;
+
+
+    #[test]
+    fn auth_test() {
+        let key = [1u8; 32];
+        let mac = auth("test".as_bytes(), key);
+        assert_eq!(mac, [20, 62, 33, 196, 79, 94, 80, 79, 78, 94, 80, 79, 78, 94, 80, 79])
+    }
+
+    #[test]
+    fn ctx_test() {
+        let key = [2u8; 32];
+        let mut ctx = Context::new(key);
+        ctx.update("test".as_bytes());
+        let mac = ctx.finalize();
+
+        assert_eq!(mac,
+                   [40, 124, 66, 136, 159, 188, 160, 158, 156, 188, 160, 158, 156, 188, 160, 158])
     }
 }

@@ -9,14 +9,12 @@ extern crate hex;
 extern crate libc;
 extern crate monocypher_sys as ffi;
 
-pub mod blake2b;
-pub mod lock;
-pub mod unlock;
-pub mod sign;
-pub mod check;
+pub mod hashing;
+pub mod aead;
+pub mod password;
+pub mod pubkey;
 pub mod utils;
 
-pub mod argon2i;
 pub mod poly1305;
 pub mod key_exchange;
 pub mod chacha20;

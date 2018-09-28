@@ -1,4 +1,6 @@
 //! Util functions for constant time comparison and memory wiping.
+//!
+//! [Official documentation](https://monocypher.org/manual/wipe)
 
 use ffi;
 use std::os::raw::c_void;

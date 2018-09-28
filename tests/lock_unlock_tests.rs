@@ -1,7 +1,6 @@
 extern crate monocypher;
 
-use monocypher::lock;
-use monocypher::unlock;
+use monocypher::aead::{lock, unlock};
 
 #[test]
 fn lock_unlock_test() {

@@ -1,6 +1,6 @@
 //! Chacha20 encryption functions
 //!
-//! Use the lock functions for authenticated encryption.
+//! [Official documentation](https://monocypher.org/manual/advanced/chacha20)
 
 use ffi;
 use std::mem;
@@ -59,6 +59,20 @@ impl Context {
     }
 
     #[inline]
+    pub fn decrypt(&mut self, cipher_text: &[u8]) -> Vec<u8> {
+        let mut plain_text = vec![0u8; cipher_text.len()];
+        unsafe {
+            ffi::crypto_chacha20_encrypt(
+                &mut self.0,
+                plain_text.as_mut_ptr(),
+                cipher_text.as_ptr(),
+                cipher_text.len(),
+            );
+            plain_text
+        }
+    }
+
+    #[inline]
     pub fn stream(&mut self, stream: &mut [u8]) {
         unsafe {
             ffi::crypto_chacha20_stream(&mut self.0, stream.as_mut_ptr(), stream.len());
@@ -76,6 +90,71 @@ impl Context {
 #[cfg(test)]
 mod test {
     use super::*;
+
+    #[test]
+    fn new_test() {
+        let key: [u8; 32] = [
+            171, 107, 219, 186, 0, 173, 209, 50, 252, 77, 93, 85, 99, 106, 222, 162, 122, 140, 150,
+            228, 61, 93, 186, 251, 45, 23, 222, 14, 121, 172, 147, 241,
+        ];
+        let nonce: [u8; 8] = [0, 0, 0, 0, 0, 0, 0, 1];
+
+        let mut ctx = Context::new(&key, nonce);
+        let mut ctx2 = Context::new(&key, nonce);
+        let ciphertext = ctx.encrypt("test".as_bytes());
+        let plaintext = ctx2.decrypt(&ciphertext);
+
+        assert_eq!(&plaintext, &"test".as_bytes())
+    }
+
+    #[test]
+    fn newx_test() {
+        let key: [u8; 32] = [
+            171, 107, 219, 186, 0, 173, 209, 50, 252, 77, 93, 85, 99, 106, 222, 162, 122, 140, 150,
+            228, 61, 93, 186, 251, 45, 23, 222, 14, 121, 172, 147, 241,
+        ];
+        let nonce: [u8; 24] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1];
+
+        let mut ctx = Context::new_x(&key, nonce);
+        let mut ctx2 = Context::new_x(&key, nonce);
+        let ciphertext = ctx.encrypt("test".as_bytes());
+        let plaintext = ctx2.decrypt(&ciphertext);
+
+        assert_eq!(&plaintext, &"test".as_bytes())
+    }
+
+    #[test]
+    fn stream_test() {
+        let key: [u8; 32] = [
+            171, 107, 219, 186, 0, 173, 209, 50, 252, 77, 93, 85, 99, 106, 222, 162, 122, 140, 150,
+            228, 61, 93, 186, 251, 45, 23, 222, 14, 121, 172, 147, 241,
+        ];
+        let nonce: [u8; 8] = [0, 0, 0, 0, 0, 0, 0, 1];
+
+        let mut ctx = Context::new(&key, nonce);
+        let mut v: Vec<u8> = vec![0, 0, 0, 0];
+        ctx.stream(& mut v);
+        assert_ne!(v, vec![0, 0, 0, 0])
+    }
+
+    #[test]
+    fn ctr_test() {
+        let key: [u8; 32] = [
+            171, 107, 219, 186, 0, 173, 209, 50, 252, 77, 93, 85, 99, 106, 222, 162, 122, 140, 150,
+            228, 61, 93, 186, 251, 45, 23, 222, 14, 121, 172, 147, 241,
+        ];
+        let nonce: [u8; 24] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1];
+
+        let mut ctx = Context::new_x(&key, nonce);
+        let mut ctx2 = Context::new_x(&key, nonce);
+        let ciphertext = ctx.encrypt("test".as_bytes());
+        ctx2.chacha20_set_ctr(1);
+        let plaintext = ctx2.decrypt(&ciphertext);
+
+        assert_ne!(&plaintext, &"test".as_bytes())
+    }
+
+
     #[test]
     fn easy_test() {
         let res: [u8; 32] = [
