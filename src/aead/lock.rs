@@ -67,6 +67,22 @@ pub fn aead(plain_text: &[u8], key: [u8; 32], nonce: [u8; 24], ad: &[u8]) -> (Ve
 
 pub struct Context(ffi::crypto_lock_ctx);
 
+
+/// Incrementally encrypt and authenticate plaintext with additional data.
+/// Note: Most users should not need this.
+/// # Example
+///
+/// ```
+/// use monocypher::aead::lock::Context;
+///
+/// let key = [2u8; 32];
+/// let nonce = [1u8; 24];
+/// let mut ctx = Context::new(key, nonce);
+/// ctx.auth_ad("data".as_bytes());
+/// let cip = ctx.update("test".as_bytes());
+/// let ret = ctx.finalize();
+///
+/// ```
 impl Context {
     #[inline]
     pub fn new(key: [u8; 32], nonce: [u8; 24]) -> Context {
@@ -81,13 +97,6 @@ impl Context {
     pub fn auth_ad(&mut self, ad: &[u8]) {
         unsafe {
             ffi::crypto_lock_auth_ad(&mut self.0, ad.as_ptr(), ad.len());
-        }
-    }
-
-    #[inline]
-    pub fn auth_message(&mut self, plain_text: &[u8]) {
-        unsafe {
-            ffi::crypto_lock_auth_message(&mut self.0, plain_text.as_ptr(), plain_text.len());
         }
     }
 
