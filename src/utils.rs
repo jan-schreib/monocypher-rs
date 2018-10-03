@@ -125,4 +125,12 @@ mod test {
 
         assert_eq!(verify(&a, &b), false)
     }
+
+    #[test]
+    fn verify_unsupported_length() {
+        let a = [1u8; 1];
+        let b = [3u8; 1];
+
+        assert_eq!(verify(&a, &b), false)
+    }
 }
