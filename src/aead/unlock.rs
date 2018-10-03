@@ -36,7 +36,7 @@ pub fn easy(
         {
             return Ok(plain_text);
         }
-        Err("Message is corrupted.".to_owned())
+        Err("Message is corrupt.".to_owned())
     }
 }
 
@@ -77,7 +77,7 @@ pub fn aead(
         {
             return Ok(plain_text);
         }
-        Err("Message is corrupted.".to_owned())
+        Err("Message is corrupt.".to_owned())
     }
 }
 
