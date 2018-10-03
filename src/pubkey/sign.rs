@@ -76,7 +76,7 @@ mod test {
     use super::*;
 
     #[test]
-    fn ctx_test() {
+    fn ctx() {
         let secret_key = [2u8; 32];
         let public_key = public_key(secret_key);
 
@@ -104,11 +104,11 @@ mod test {
     }
 
     #[test]
-    fn sign_test() {
+    fn sign() {
         let secret_key = [2u8; 32];
         let public_key = public_key(secret_key);
 
-        let sig = sign(secret_key, public_key, "test".as_bytes());
+        let sig = ::pubkey::sign::sign(secret_key, public_key, "test".as_bytes());
 
         assert_eq!(sig[0..32], [44, 38, 60, 190, 58, 69, 201, 60, 76, 129, 172, 162, 182, 226, 56,
             66, 17, 98, 172, 194, 211, 137, 201, 113, 194, 5, 128, 228, 110, 194, 35, 133]);

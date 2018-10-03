@@ -120,15 +120,16 @@ mod test {
     use super::*;
 
     #[test]
-    fn ctx_test() {
+    fn ctx() {
         let key = [2u8; 32];
         let nonce = [1u8; 24];
 
         let mut ctx = Context::new(key, nonce);
         ctx.auth_ad("data".as_bytes());
-        ctx.update("test".as_bytes());
+        let cip = ctx.update("test".as_bytes());
         let ret = ctx.finalize();
 
+        assert_eq!(cip, vec![2, 80, 28, 36]);
         assert_eq!(ret, [242, 64, 42, 164, 160, 49, 172, 240, 33, 52, 132, 23, 171, 222, 221, 253])
     }
 }

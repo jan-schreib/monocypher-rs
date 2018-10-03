@@ -90,7 +90,7 @@ mod test {
     use super::*;
 
     #[test]
-    fn blake2b_incremental_test() {
+    fn blake2b_incremental() {
         let mut ctx = Context::new("test".as_bytes());
         ctx.update("TEST".as_bytes());
         let hash = ctx.finalize();
@@ -98,25 +98,25 @@ mod test {
     }
 
     #[test]
-    fn blake2b_len_test() {
+    fn blake2b_len() {
         let vec = easy("TEST".as_bytes());
         assert_eq!(vec.len(), 64);
     }
 
     #[test]
-    fn blake2b_sum_test() {
+    fn blake2b_sum() {
         let ret = easy("TEST".as_bytes()).to_vec();
         assert_eq!(hex::encode(ret), "5322bc39e200a6d2ef54ac6716376d5000f98a9715cb5293edd6e1e0f8865d3b22cb0fa92e09d52abef0cf58a2b067d4bc64fbee1e4bce0e9e642ce803dc6f99");
     }
 
     #[test]
-    fn blake2b_general_len_test() {
+    fn blake2b_general_len() {
         let vec = general("TEST".as_bytes(), "test".as_bytes());
         assert_eq!(vec.len(), 64);
     }
 
     #[test]
-    fn blake2b_general_sum_test() {
+    fn blake2b_general_sum() {
         let ret = general("TEST".as_bytes(), "test".as_bytes()).to_vec();
         assert_eq!(hex::encode(ret), "e33ee689585ebe3fc169a845482a47432c21a4134134d2f6c57d06dda4622500e73c79f3ab9d8a3728a7575ebb0f5a78bc6608db427e18cbba1ff6847e3fb6bb");
     }

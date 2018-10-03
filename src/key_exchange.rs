@@ -49,12 +49,10 @@ pub fn public(secret_key: [u8; 32]) -> [u8; 32] {
 
 #[cfg(test)]
 mod test {
-    use super::*;
-
     #[test]
-    fn shared_test() {
+    fn shared() {
         let pubkey = [1u8; 32];
-        let shared_key = shared([31u8; 32], pubkey);
+        let shared_key = ::key_exchange::shared([31u8; 32], pubkey);
 
         assert_eq!(shared_key.is_ok(), true);
         assert_eq!(shared_key.unwrap(),
@@ -63,9 +61,9 @@ mod test {
     }
 
     #[test]
-    fn public_test() {
+    fn public() {
         let secret_key = [2u8; 32];
-        let public_key = public(secret_key);
+        let public_key = ::key_exchange::public(secret_key);
 
         assert_eq!(public_key,
                    [206, 141, 58, 209, 204, 182, 51, 236, 123, 112, 193, 120, 20, 165, 199, 110,

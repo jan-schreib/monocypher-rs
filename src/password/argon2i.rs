@@ -111,7 +111,7 @@ mod test {
     use super::*;
 
     #[test]
-    fn argon2i_test() {
+    fn argon2i() {
         let pass = hex::encode(easy("pass".as_bytes(), "salt".as_bytes(), 100000, 3).unwrap());
         assert_eq!(
             pass,
@@ -120,13 +120,13 @@ mod test {
     }
 
     #[test]
-    fn argon2i_fail_test() {
+    fn argon2i_fail() {
         let pass = hex::encode(easy("pass".as_bytes(), "tlas".as_bytes(), 100000, 3).unwrap());
         assert_ne!(pass, "ddd18e8102c7eed2cde478");
     }
 
     #[test]
-    fn argon2i_general_test() {
+    fn argon2i_general() {
         let pass = hex::encode(
             general(
                 "pass".as_bytes(),
@@ -144,7 +144,7 @@ mod test {
     }
 
     #[test]
-    fn argon2i_general_key_fail_test() {
+    fn argon2i_general_key_fail() {
         let pass = hex::encode(
             general(
                 "pass".as_bytes(),
@@ -162,7 +162,7 @@ mod test {
     }
 
     #[test]
-    fn argon2i_general_ad_fail_test() {
+    fn argon2i_general_ad_fail() {
         let pass = hex::encode(
             general(
                 "pass".as_bytes(),
@@ -180,17 +180,8 @@ mod test {
     }
 
     #[test]
-    fn workarea_zero_test() {
+    fn workarea_zero() {
         let wa = alloc_workarea(0);
-        assert_eq!(wa.is_ok(), true);
-        unsafe {
-            libc::free(wa.unwrap());
-        }
-    }
-
-    #[test]
-    fn workarea_max_test() {
-        let wa = alloc_workarea(u32::max_value());
         assert_eq!(wa.is_ok(), true);
         unsafe {
             libc::free(wa.unwrap());

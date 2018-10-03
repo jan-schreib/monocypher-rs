@@ -7,8 +7,6 @@ use ffi;
 use std::mem;
 
 /// Produces a message authentication code for the given message and authentication key.
-///
-/// #Example
 pub fn auth(message: &[u8], key: [u8; 32]) -> [u8; 16] {
     unsafe {
         let mut mac: [u8; 16] = mem::uninitialized();
@@ -57,14 +55,14 @@ mod test {
 
 
     #[test]
-    fn auth_test() {
+    fn auth() {
         let key = [1u8; 32];
-        let mac = auth("test".as_bytes(), key);
+        let mac = ::poly1305::auth("test".as_bytes(), key);
         assert_eq!(mac, [20, 62, 33, 196, 79, 94, 80, 79, 78, 94, 80, 79, 78, 94, 80, 79])
     }
 
     #[test]
-    fn ctx_test() {
+    fn ctx() {
         let key = [2u8; 32];
         let mut ctx = Context::new(key);
         ctx.update("test".as_bytes());

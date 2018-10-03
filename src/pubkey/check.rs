@@ -56,31 +56,31 @@ mod test {
     use ::pubkey::sign;
 
     #[test]
-    fn check_test() {
+    fn check() {
         let secret_key = [2u8; 32];
         let public_key = ::pubkey::sign::public_key(secret_key);
 
         let sig = sign::sign(secret_key, public_key, "test".as_bytes());
 
-        let ret = check(sig, public_key, "test".as_bytes());
+        let ret = ::pubkey::check::check(sig, public_key, "test".as_bytes());
 
         assert_eq!(ret.is_ok(), true)
     }
 
     #[test]
-    fn check_forged_test() {
+    fn check_forged() {
         let secret_key = [2u8; 32];
         let public_key = sign::public_key(secret_key);
 
         let sig = sign::sign(secret_key, public_key, "test".as_bytes());
 
-        let ret = check(sig, public_key, "not_test".as_bytes());
+        let ret = ::pubkey::check::check(sig, public_key, "not_test".as_bytes());
 
         assert_eq!(ret.is_err(), true)
     }
 
     #[test]
-    fn ctx_test() {
+    fn ctx() {
         let secret_key = [2u8; 32];
         let public_key = ::pubkey::sign::public_key(secret_key);
 
@@ -94,7 +94,7 @@ mod test {
     }
 
     #[test]
-    fn ctx_fail_test() {
+    fn ctx_fail() {
         let secret_key = [2u8; 32];
         let public_key = ::pubkey::sign::public_key(secret_key);
 

@@ -53,7 +53,7 @@ mod test {
     use super::*;
 
     #[test]
-    fn wipe_test() {
+    fn wipe() {
         let mut a: [u8; 16] = [0; 16];
 
         for i in 0..a.len() {
@@ -64,7 +64,7 @@ mod test {
             assert_eq!(a[i], i as u8);
         }
 
-        wipe(&mut a);
+        ::utils::wipe(&mut a);
 
         for i in 0..a.len() {
             assert_eq!(a[i], 0);
@@ -72,14 +72,14 @@ mod test {
     }
 
     #[test]
-    fn verify_len_test() {
+    fn verify_mix() {
         let a = [4; 16];
         let b = [4; 32];
         assert_eq!(verify(&a, &b), false)
     }
 
     #[test]
-    fn verify16_test() {
+    fn verify16() {
         let a = [1u8; 16];
         let b = [1u8; 16];
 
@@ -87,7 +87,7 @@ mod test {
     }
 
     #[test]
-    fn verify16_fail_test() {
+    fn verify16_fail() {
         let a = [1u8; 16];
         let b = [3u8; 16];
 
@@ -95,7 +95,7 @@ mod test {
     }
 
     #[test]
-    fn verify32_test() {
+    fn verify32() {
         let a = [1u8; 32];
         let b = [1u8; 32];
 
@@ -103,7 +103,7 @@ mod test {
     }
 
     #[test]
-    fn verify32_fail_test() {
+    fn verify32_fail() {
         let a = [1u8; 32];
         let b = [3u8; 32];
 
@@ -119,7 +119,7 @@ mod test {
     }
 
     #[test]
-    fn verify64_fail_test() {
+    fn verify64_fail() {
         let a = [1u8; 64];
         let b = [3u8; 64];
 

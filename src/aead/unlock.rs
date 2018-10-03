@@ -100,10 +100,11 @@ impl Context {
         }
     }
 
+    //authenticate without decrypting
     #[inline]
-    pub fn auth_message(&mut self, plain_text: &[u8]) {
+    pub fn auth_message(&mut self, cipher_text: &[u8]) {
         unsafe {
-            ffi::crypto_lock_auth_message(&mut self.0, plain_text.as_ptr(), plain_text.len());
+            ffi::crypto_lock_auth_message(&mut self.0, cipher_text.as_ptr(), cipher_text.len());
         }
     }
 
@@ -129,5 +130,65 @@ impl Context {
             }
             Err("Message is corrupted.".to_owned())
         }
+    }
+}
+
+#[cfg(test)]
+mod test {
+    use super::*;
+
+    #[test]
+    fn ctx() {
+        let key = [2u8; 32];
+        let nonce = [1u8; 24];
+
+        let mut ctx = ::aead::lock::Context::new(key, nonce);
+        ctx.auth_ad("data".as_bytes());
+        let cip = ctx.update("test".as_bytes());
+        let mac = ctx.finalize();
+
+        let mut ctx_unlock = Context::new(key, nonce);
+        ctx_unlock.auth_ad("data".as_bytes());
+        let pt = ctx_unlock.update(&cip);
+        let r_unlock = ctx_unlock.finalize(mac);
+
+        assert_eq!(pt, vec![116, 101, 115, 116]);
+        assert_eq!(r_unlock.is_ok(), true)
+    }
+
+    #[test]
+    fn ctx_auth_no_decryption() {
+        let key = [2u8; 32];
+        let nonce = [1u8; 24];
+
+        let mut ctx = ::aead::lock::Context::new(key, nonce);
+        ctx.auth_ad("data".as_bytes());
+        let cip = ctx.update("test".as_bytes());
+        let mac = ctx.finalize();
+
+        let mut ctx_unlock = Context::new(key, nonce);
+        ctx_unlock.auth_ad("data".as_bytes());
+        ctx_unlock.auth_message(&cip);
+        let r_unlock = ctx_unlock.finalize(mac);
+
+        assert_eq!(r_unlock.is_ok(), true)
+    }
+
+    #[test]
+    fn ctx_wrong_mac() {
+        let key = [2u8; 32];
+        let nonce = [1u8; 24];
+
+        let mut ctx = ::aead::lock::Context::new(key, nonce);
+        ctx.auth_ad("data".as_bytes());
+        let cip = ctx.update("test".as_bytes());
+        let _mac = ctx.finalize();
+        let mut ctx_unlock = Context::new(key, nonce);
+        ctx_unlock.auth_ad("data".as_bytes());
+        let pt = ctx_unlock.update(&cip);
+        let r_unlock = ctx_unlock.finalize([0; 16]);
+
+        assert_eq!(pt, vec![116, 101, 115, 116]);
+        assert_eq!(r_unlock.is_err(), true)
     }
 }

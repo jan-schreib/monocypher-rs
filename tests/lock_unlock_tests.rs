@@ -3,7 +3,7 @@ extern crate monocypher;
 use monocypher::aead::{lock, unlock};
 
 #[test]
-fn lock_unlock_test() {
+fn lock_unlock() {
     let plaintext = "secret";
     let key: [u8; 32] = [1; 32];
     let nonce: [u8; 24] = [2; 24];
@@ -15,7 +15,7 @@ fn lock_unlock_test() {
 }
 
 #[test]
-fn aead_lock_unlock_test() {
+fn aead_lock_unlock() {
     let plaintext = "secret";
     let ad = "add";
     let key: [u8; 32] = [1; 32];
