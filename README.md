@@ -1,6 +1,7 @@
 # monocypher-rs
 
 Rust bindings for [monocypher](https://monocypher.org/)
+
 [Documentation](https://cphrn.github.io/doc/monocypher/index.html)
 
 ToDo:
