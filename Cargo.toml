@@ -11,8 +11,8 @@ keywords = ["cryptography", "security", "encryption"]
 categories = ["cryptography"]
 
 [dependencies]
-libc = "0.2.36"
-hex = "0.3.1"
+libc = "0.2"
+hex = "0.3"
 
 [dependencies.monocypher-sys]
 path = "./monocypher_sys"
