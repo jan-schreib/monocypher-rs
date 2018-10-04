@@ -1,10 +1,11 @@
 # monocypher-rs
 
 Rust bindings for [monocypher](https://monocypher.org/)
+[Documentation](https://cphrn.github.io/doc/monocypher/index.html)
 
 ToDo:
 
-- [ ] Documentation
+- [ ] improve documentation
 - [x] Unit Tests
 - [ ] Integration Tests
 - [ ] High Level API
