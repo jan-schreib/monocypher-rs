@@ -59,6 +59,8 @@ pub struct Context(ffi::crypto_blake2b_ctx);
 /// ```
 impl Context {
     #[inline]
+
+    /// Initializes a new context with the given key.
     pub fn new(key: &[u8]) -> Context {
         unsafe {
             let mut ctx = mem::uninitialized();
@@ -67,13 +69,15 @@ impl Context {
         }
     }
 
+    /// Updates the context with the given data.
     #[inline]
-    pub fn update(&mut self, buf: &[u8]) {
+    pub fn update(&mut self, data: &[u8]) {
         unsafe {
-            ffi::crypto_blake2b_update(&mut self.0, buf.as_ptr(), buf.len());
+            ffi::crypto_blake2b_update(&mut self.0, data.as_ptr(), data.len());
         }
     }
 
+    /// Finalizes the hash and returns it.
     #[inline]
     pub fn finalize(&mut self) -> [u8; 64] {
         unsafe {
