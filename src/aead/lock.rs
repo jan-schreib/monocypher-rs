@@ -129,6 +129,18 @@ mod test {
     use super::*;
 
     #[test]
+    fn easy_aead() {
+        let plaintext = "secret";
+
+        let key: [u8; 32] = [1; 32];
+        let nonce: [u8; 24] = [2; 24];
+        let (a, b) = easy(plaintext.as_bytes(), key, nonce);
+
+        assert_eq!(a, vec![191, 3, 85, 157, 207, 3]);
+        assert_eq!(b, [106, 87, 195, 174, 146, 191, 227, 61, 151, 170, 230, 242, 47, 45, 28, 236]);
+    }
+
+    #[test]
     fn ctx() {
         let key = [2u8; 32];
         let nonce = [1u8; 24];
