@@ -1,5 +1,4 @@
 //! Poly1305 is a one-time message authentication code.
-//! The authentication key can be used only once!
 //!
 //! [Official documentation](https://monocypher.org/manual/advanced/poly1305)
 
@@ -7,6 +6,16 @@ use ffi;
 use std::mem;
 
 /// Produces a message authentication code for the given message and authentication key.
+///
+/// # Example
+///
+/// ```
+/// use monocypher::poly1305;
+///
+/// let key = [1u8; 32];
+/// let mac = poly1305::auth("test".as_bytes(), key);
+///
+/// ```
 pub fn auth(message: &[u8], key: [u8; 32]) -> [u8; 16] {
     unsafe {
         let mut mac: [u8; 16] = mem::uninitialized();
@@ -23,6 +32,8 @@ pub fn auth(message: &[u8], key: [u8; 32]) -> [u8; 16] {
 pub struct Context(ffi::crypto_poly1305_ctx);
 
 impl Context {
+
+    /// Initializes a new context with the given key.
     #[inline]
     pub fn new(key: [u8; 32]) -> Context {
         unsafe {
@@ -32,6 +43,7 @@ impl Context {
         }
     }
 
+    /// Authenticates the message chunk by chunk.
     #[inline]
     pub fn update(&mut self, message: &[u8]) {
         unsafe {
@@ -39,6 +51,7 @@ impl Context {
         }
     }
 
+    /// Produces the message authentication code.
     #[inline]
     pub fn finalize(&mut self) -> [u8; 16] {
         unsafe {
