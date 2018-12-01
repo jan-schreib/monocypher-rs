@@ -5,23 +5,6 @@
 use ffi;
 use std::mem;
 
-/// Simple encryption function.
-///
-/// # Example
-///
-/// ```
-/// use monocypher::chacha20::easy;
-///
-/// easy([42u8; 32], [123u8; 16]);
-/// ```
-pub fn easy(key: [u8; 32], input: [u8; 16]) -> [u8; 32] {
-    unsafe {
-        let mut out: [u8; 32] = mem::uninitialized();
-        ffi::crypto_chacha20_H(out.as_mut_ptr(), key.as_ptr(), input.as_ptr());
-        out
-    }
-}
-
 pub struct Context(ffi::crypto_chacha_ctx);
 
 /// These functions provide an incremental interface for the Chacha20 encryption primitive.
@@ -152,16 +135,5 @@ mod test {
         let plaintext = ctx2.decrypt(&ciphertext);
 
         assert_ne!(&plaintext, &"test".as_bytes())
-    }
-
-
-    #[test]
-    fn easy() {
-        let res: [u8; 32] = [
-            171, 107, 219, 186, 0, 173, 209, 50, 252, 77, 93, 85, 99, 106, 222, 162, 122, 140, 150,
-            228, 61, 93, 186, 251, 45, 23, 222, 14, 121, 172, 147, 241,
-        ];
-
-        assert_eq!(::chacha20::easy([1u8; 32], [2u8; 16]), res)
     }
 }
