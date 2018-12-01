@@ -6,7 +6,7 @@ use std::mem;
 use ffi;
 
 /// Not-so-cryptographic hashing function.
-/// Use blak2b when in doubt.
+/// Use blak2b.
 /// 
 /// # Example
 ///
