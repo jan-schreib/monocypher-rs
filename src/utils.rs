@@ -21,16 +21,35 @@ use std::os::raw::c_void;
 ///     //abort
 /// }
 /// ```
+#[inline]
 pub fn verify(a: &[u8], b: &[u8]) -> bool {
-    if a.len() != b.len() {
-        return false;
-    }
+    a.len() == b.len() && verify_internal(a, b) == 0
+}
 
-    match a.len() {
-        16 => unsafe { ffi::crypto_verify16(a.as_ptr(), b.as_ptr()) == 0 },
-        32 => unsafe { ffi::crypto_verify32(a.as_ptr(), b.as_ptr()) == 0 },
-        64 => unsafe { ffi::crypto_verify64(a.as_ptr(), b.as_ptr()) == 0 },
-        _ => false,
+#[inline(never)]
+fn verify_internal(a: &[u8], b: &[u8]) -> u8 {
+    //be paranoid here
+    if a.len() != b.len() {
+        return 1;
+    }
+    //"useless", but lets the optimizer skip bounds checks.
+    let len = a.len();
+    let a = &a[..len];
+    let b = &b[..len];
+
+    let cmp = {
+        let mut ret = 0;
+        for i in 0..len {
+            ret |= a[i] ^ b[i]
+        }
+        ret
+    };
+
+    match len {
+        16 => return cmp,
+        32 => return cmp,
+        64 => return cmp,
+        _ => return 1,
     }
 }
 
@@ -111,7 +130,7 @@ mod test {
     }
 
     #[test]
-    fn verify64_test() {
+    fn verify64() {
         let a = [1u8; 64];
         let b = [1u8; 64];
 
@@ -129,7 +148,7 @@ mod test {
     #[test]
     fn verify_unsupported_length() {
         let a = [1u8; 1];
-        let b = [3u8; 1];
+        let b = [1u8; 1];
 
         assert_eq!(verify(&a, &b), false)
     }
