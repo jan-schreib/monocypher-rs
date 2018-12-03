@@ -8,7 +8,7 @@ Rust bindings for [monocypher](https://monocypher.org/)
 
 ToDo:
 
-- [ ] improve documentation
+- [x] improve documentation
 - [x] Unit Tests
 - [ ] Integration Tests
 - [ ] High Level API
