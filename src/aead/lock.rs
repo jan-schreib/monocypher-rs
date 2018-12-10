@@ -67,7 +67,6 @@ pub fn aead(plain_text: &[u8], key: [u8; 32], nonce: [u8; 24], ad: &[u8]) -> (Ve
 
 pub struct Context(ffi::crypto_lock_ctx);
 
-
 /// Incrementally encrypt and authenticate plaintext with additional data.
 /// Note: Most users should not need this.
 /// # Example
@@ -137,7 +136,10 @@ mod test {
         let (a, b) = easy(plaintext.as_bytes(), key, nonce);
 
         assert_eq!(a, vec![191, 3, 85, 157, 207, 3]);
-        assert_eq!(b, [106, 87, 195, 174, 146, 191, 227, 61, 151, 170, 230, 242, 47, 45, 28, 236]);
+        assert_eq!(
+            b,
+            [106, 87, 195, 174, 146, 191, 227, 61, 151, 170, 230, 242, 47, 45, 28, 236]
+        );
     }
 
     #[test]
@@ -151,6 +153,9 @@ mod test {
         let ret = ctx.finalize();
 
         assert_eq!(cip, vec![2, 80, 28, 36]);
-        assert_eq!(ret, [242, 64, 42, 164, 160, 49, 172, 240, 33, 52, 132, 23, 171, 222, 221, 253])
+        assert_eq!(
+            ret,
+            [242, 64, 42, 164, 160, 49, 172, 240, 33, 52, 132, 23, 171, 222, 221, 253]
+        )
     }
 }
