@@ -8,4 +8,4 @@ keywords = ["api-bindings", "cryptography"]
 license = "ISC"
 
 [build-dependencies]
-bindgen = "0.44"
+bindgen = "0.46"
