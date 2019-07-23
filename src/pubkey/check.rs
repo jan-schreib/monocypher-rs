@@ -26,9 +26,9 @@ impl Context {
     #[inline]
     pub fn new(signature: [u8; 64], public_key: [u8; 32]) -> Context {
         unsafe {
-            let mut ctx = mem::uninitialized();
-            ffi::crypto_check_init(&mut ctx, signature.as_ptr(), public_key.as_ptr());
-            Context(ctx)
+            let mut ctx = mem::MaybeUninit::<ffi::crypto_check_ctx>::uninit();
+            ffi::crypto_check_init(ctx.as_mut_ptr() as *mut ffi::crypto_check_ctx, signature.as_ptr(), public_key.as_ptr());
+            Context(ctx.assume_init())
         }
     }
 

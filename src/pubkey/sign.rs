@@ -9,9 +9,9 @@ use std::mem;
 /// Computes the public key of the specified secret key.
 pub fn public_key(secret_key: [u8; 32]) -> [u8; 32] {
     unsafe {
-        let mut public_key: [u8; 32] = mem::uninitialized();
-        ffi::crypto_sign_public_key(public_key.as_mut_ptr(), secret_key.as_ptr());
-        public_key
+        let mut public_key = mem::MaybeUninit::<[u8; 32]>::uninit();
+        ffi::crypto_sign_public_key(public_key.as_mut_ptr() as *mut u8, secret_key.as_ptr());
+        public_key.assume_init()
     }
 }
 
@@ -20,16 +20,16 @@ pub fn public_key(secret_key: [u8; 32]) -> [u8; 32] {
 /// This recomputation doubles the execution time.
 pub fn sign(secret_key: [u8; 32], public_key: [u8; 32], message: &[u8]) -> [u8; 64] {
     unsafe {
-        let mut signature: [u8; 64] = mem::uninitialized();
+        let mut signature = mem::MaybeUninit::<[u8; 64]>::uninit();
         ffi::crypto_sign(
-            signature.as_mut_ptr(),
+            signature.as_mut_ptr() as *mut u8,
             secret_key.as_ptr(),
             public_key.as_ptr(),
             message.as_ptr(),
             message.len() as usize,
         );
 
-        signature
+        signature.assume_init()
     }
 }
 
@@ -41,9 +41,10 @@ impl Context {
     #[inline]
     pub fn new(secret_key: [u8; 32], public_key: [u8; 32]) -> Context {
         unsafe {
-            let mut ctx = mem::uninitialized();
-            ffi::crypto_sign_init_first_pass(&mut ctx, secret_key.as_ptr(), public_key.as_ptr());
-            Context(ctx)
+            let mut ctx = mem::MaybeUninit::<ffi::crypto_sign_ctx>::uninit();
+            ffi::crypto_sign_init_first_pass(ctx.as_mut_ptr() as *mut ffi::crypto_sign_ctx,
+                                             secret_key.as_ptr(), public_key.as_ptr());
+            Context(ctx.assume_init())
         }
     }
 
@@ -57,9 +58,9 @@ impl Context {
     #[inline]
     pub fn finalize(&mut self) -> [u8; 64] {
         unsafe {
-            let mut signature: [u8; 64] = mem::uninitialized();
-            ffi::crypto_sign_final(&mut self.0, signature.as_mut_ptr());
-            signature
+            let mut signature = mem::MaybeUninit::<[u8; 64]>::uninit();
+            ffi::crypto_sign_final(&mut self.0, signature.as_mut_ptr() as *mut u8);
+            signature.assume_init()
         }
     }
 

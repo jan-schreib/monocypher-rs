@@ -18,14 +18,14 @@ use std::mem;
 /// ```
 pub fn auth(message: &[u8], key: [u8; 32]) -> [u8; 16] {
     unsafe {
-        let mut mac: [u8; 16] = mem::uninitialized();
+        let mut mac = mem::MaybeUninit::<[u8; 16]>::uninit();
         ffi::crypto_poly1305(
-            mac.as_mut_ptr(),
+            mac.as_mut_ptr() as *mut u8,
             message.as_ptr(),
             message.len(),
             key.as_ptr(),
         );
-        mac
+        mac.assume_init()
     }
 }
 
@@ -37,9 +37,9 @@ impl Context {
     #[inline]
     pub fn new(key: [u8; 32]) -> Context {
         unsafe {
-            let mut ctx = mem::uninitialized();
-            ffi::crypto_poly1305_init(&mut ctx, key.as_ptr());
-            Context(ctx)
+            let mut ctx = mem::MaybeUninit::<ffi::crypto_poly1305_ctx>::uninit();
+            ffi::crypto_poly1305_init(ctx.as_mut_ptr() as *mut ffi::crypto_poly1305_ctx, key.as_ptr());
+            Context(ctx.assume_init())
         }
     }
 
@@ -55,9 +55,9 @@ impl Context {
     #[inline]
     pub fn finalize(&mut self) -> [u8; 16] {
         unsafe {
-            let mut mac: [u8; 16] = mem::uninitialized();
-            ffi::crypto_poly1305_final(&mut self.0, mac.as_mut_ptr());
-            mac
+            let mut mac = mem::MaybeUninit::<[u8; 16]>::uninit();
+            ffi::crypto_poly1305_final(&mut self.0, mac.as_mut_ptr() as *mut u8);
+            mac.assume_init()
         }
     }
 }

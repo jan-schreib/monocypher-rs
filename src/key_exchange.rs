@@ -17,14 +17,14 @@ use std::mem;
 /// ```
 pub fn shared(secret_key: [u8; 32], their_public_key: [u8; 32]) -> Result<[u8; 32], String> {
     unsafe {
-        let mut shared_key: [u8; 32] = mem::uninitialized();
+        let mut shared_key= mem::MaybeUninit::<[u8; 32]>::uninit();
         if ffi::crypto_key_exchange(
-            shared_key.as_mut_ptr(),
+            shared_key.as_mut_ptr() as *mut u8,
             secret_key.as_ptr(),
             their_public_key.as_ptr(),
         ) == 0
         {
-            return Ok(shared_key);
+            return Ok(shared_key.assume_init());
         }
         Err("Their public key is malicious!".to_owned())
     }
@@ -41,9 +41,9 @@ pub fn shared(secret_key: [u8; 32], their_public_key: [u8; 32]) -> Result<[u8; 3
 /// ```
 pub fn public(secret_key: [u8; 32]) -> [u8; 32] {
     unsafe {
-        let mut public_key: [u8; 32] = mem::uninitialized();
-        ffi::crypto_x25519_public_key(public_key.as_mut_ptr(), secret_key.as_ptr());
-        public_key
+        let mut public_key= mem::MaybeUninit::<[u8; 32]>::uninit();
+        ffi::crypto_x25519_public_key(public_key.as_mut_ptr() as *mut u8, secret_key.as_ptr());
+        public_key.assume_init()
     }
 }
 

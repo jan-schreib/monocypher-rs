@@ -19,9 +19,9 @@ use std::mem;
 pub fn easy(plain_text: &[u8], key: [u8; 32], nonce: [u8; 24]) -> (Vec<u8>, [u8; 16]) {
     unsafe {
         let mut cipher_text: Vec<u8> = vec![0u8; plain_text.len()];
-        let mut mac: [u8; 16] = mem::uninitialized();
+        let mut mac = mem::MaybeUninit::<[u8; 16]>::uninit();
         ffi::crypto_lock(
-            mac.as_mut_ptr(),
+            mac.as_mut_ptr() as *mut u8,
             cipher_text.as_mut_ptr(),
             key.as_ptr(),
             nonce.as_ptr(),
@@ -29,7 +29,7 @@ pub fn easy(plain_text: &[u8], key: [u8; 32], nonce: [u8; 24]) -> (Vec<u8>, [u8;
             plain_text.len(),
         );
 
-        (cipher_text, mac)
+        (cipher_text, mac.assume_init())
     }
 }
 
@@ -50,9 +50,9 @@ pub fn easy(plain_text: &[u8], key: [u8; 32], nonce: [u8; 24]) -> (Vec<u8>, [u8;
 pub fn aead(plain_text: &[u8], key: [u8; 32], nonce: [u8; 24], ad: &[u8]) -> (Vec<u8>, [u8; 16]) {
     unsafe {
         let mut cipher_text: Vec<u8> = vec![0u8; plain_text.len()];
-        let mut mac: [u8; 16] = mem::uninitialized();
+        let mut mac = mem::MaybeUninit::<[u8; 16]>::uninit();
         ffi::crypto_lock_aead(
-            mac.as_mut_ptr(),
+            mac.as_mut_ptr() as *mut u8,
             cipher_text.as_mut_ptr(),
             key.as_ptr(),
             nonce.as_ptr(),
@@ -61,7 +61,7 @@ pub fn aead(plain_text: &[u8], key: [u8; 32], nonce: [u8; 24], ad: &[u8]) -> (Ve
             plain_text.as_ptr(),
             plain_text.len(),
         );
-        (cipher_text, mac)
+        (cipher_text, mac.assume_init())
     }
 }
 
@@ -86,9 +86,10 @@ impl Context {
     #[inline]
     pub fn new(key: [u8; 32], nonce: [u8; 24]) -> Context {
         unsafe {
-            let mut ctx = mem::uninitialized();
-            ffi::crypto_lock_init(&mut ctx, key.as_ptr(), nonce.as_ptr());
-            Context(ctx)
+            let mut ctx = mem::MaybeUninit::<ffi::crypto_lock_ctx>::uninit();
+            ffi::crypto_lock_init(ctx.as_mut_ptr() as *mut ffi::crypto_lock_ctx,
+                                  key.as_ptr(), nonce.as_ptr());
+            Context(ctx.assume_init())
         }
     }
 
@@ -116,9 +117,9 @@ impl Context {
     #[inline]
     pub fn finalize(&mut self) -> [u8; 16] {
         unsafe {
-            let mut mac: [u8; 16] = mem::uninitialized();
-            ffi::crypto_lock_final(&mut self.0, mac.as_mut_ptr());
-            mac
+            let mut mac = mem::MaybeUninit::<[u8; 16]>::uninit();
+            ffi::crypto_lock_final(&mut self.0, mac.as_mut_ptr() as *mut u8);
+            mac.assume_init()
         }
     }
 }

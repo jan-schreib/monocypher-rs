@@ -31,16 +31,16 @@ pub fn easy(data: &[u8]) -> [u8; 64] {
 /// ```
 pub fn general(data: &[u8], key: &[u8]) -> [u8; 64] {
     unsafe {
-        let mut hash: [u8; 64] = mem::uninitialized();
+        let mut hash = mem::MaybeUninit::<[u8; 64]>::uninit();
         ffi::crypto_blake2b_general(
-            hash.as_mut_ptr(),
-            64 as size_t,
+            hash.as_mut_ptr() as *mut u8,
+            64,
             key.as_ptr(),
             key.len() as size_t,
             data.as_ptr(),
             data.len() as size_t,
         );
-        hash
+        hash.assume_init()
     }
 }
 
@@ -63,9 +63,10 @@ impl Context {
     /// Initializes a new context with the given key.
     pub fn new(key: &[u8]) -> Context {
         unsafe {
-            let mut ctx = mem::uninitialized();
-            ffi::crypto_blake2b_general_init(&mut ctx, 64, key.as_ptr(), key.len());
-            Context(ctx)
+            let mut ctx = mem::MaybeUninit::<ffi::crypto_blake2b_ctx>::uninit();
+            ffi::crypto_blake2b_general_init(ctx.as_mut_ptr() as *mut ffi::crypto_blake2b_ctx,
+                                             64, key.as_ptr(), key.len());
+            Context(ctx.assume_init())
         }
     }
 
@@ -81,9 +82,9 @@ impl Context {
     #[inline]
     pub fn finalize(&mut self) -> [u8; 64] {
         unsafe {
-            let mut hash: [u8; 64] = mem::uninitialized();
-            ffi::crypto_blake2b_final(&mut self.0, hash.as_mut_ptr());
-            hash
+            let mut hash= mem::MaybeUninit::<[u8; 64]>::uninit();
+            ffi::crypto_blake2b_final(&mut self.0, hash.as_mut_ptr() as *mut u8);
+            hash.assume_init()
         }
     }
 }

@@ -40,11 +40,11 @@ pub fn easy(
     };
 
     unsafe {
-        let mut hash: [u8; 32] = mem::uninitialized();
+        let mut hash = mem::MaybeUninit::<[u8; 32]>::uninit();
 
         ffi::crypto_argon2i(
-            hash.as_mut_ptr(),
-            hash.len() as u32,
+            hash.as_mut_ptr() as *mut u8,
+            hash.assume_init().len() as u32,
             work_area as *mut raw::c_void,
             nb_blocks,
             nb_iterations,
@@ -55,7 +55,7 @@ pub fn easy(
         );
 
         libc::free(work_area);
-        Ok(hash)
+        Ok(hash.assume_init())
     }
 }
 
@@ -83,10 +83,11 @@ pub fn general(
     };
 
     unsafe {
-        let mut hash: [u8; 32] = mem::uninitialized();
+        let mut hash = mem::MaybeUninit::<[u8; 32]>::uninit();
+
         ffi::crypto_argon2i_general(
-            hash.as_mut_ptr(),
-            hash.len() as u32,
+            hash.as_mut_ptr() as *mut u8,
+            hash.assume_init().len() as u32,
             work_area as *mut raw::c_void,
             nb_blocks,
             nb_iterations,
@@ -101,7 +102,7 @@ pub fn general(
         );
 
         libc::free(work_area);
-        Ok(hash)
+        Ok(hash.assume_init())
     }
 }
 

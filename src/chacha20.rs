@@ -1,4 +1,4 @@
-//! Chacha20 encryption functions
+ //! Chacha20 encryption functions
 //!
 //! [Official documentation](https://monocypher.org/manual/advanced/chacha20)
 
@@ -38,9 +38,9 @@ impl Context {
     #[inline]
     pub fn new(key: &[u8], nonce: [u8; 8]) -> Context {
         unsafe {
-            let mut ctx = mem::uninitialized();
-            ffi::crypto_chacha20_init(&mut ctx, key.as_ptr(), nonce.as_ptr());
-            Context(ctx)
+            let mut ctx = mem::MaybeUninit::<ffi::crypto_chacha_ctx>::uninit();
+            ffi::crypto_chacha20_init(ctx.as_mut_ptr() as *mut ffi::crypto_chacha_ctx, key.as_ptr(), nonce.as_ptr());
+            Context(ctx.assume_init())
         }
     }
 
@@ -51,9 +51,9 @@ impl Context {
     #[inline]
     pub fn new_x(key: &[u8], nonce: [u8; 24]) -> Context {
         unsafe {
-            let mut ctx = mem::uninitialized();
-            ffi::crypto_chacha20_x_init(&mut ctx, key.as_ptr(), nonce.as_ptr());
-            Context(ctx)
+            let mut ctx = mem::MaybeUninit::<ffi::crypto_chacha_ctx>::uninit();
+            ffi::crypto_chacha20_x_init(ctx.as_mut_ptr() as *mut ffi::crypto_chacha_ctx, key.as_ptr(), nonce.as_ptr());
+            Context(ctx.assume_init())
         }
     }
 

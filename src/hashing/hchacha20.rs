@@ -17,9 +17,9 @@ use ffi;
 /// ```
 pub fn easy(key: [u8; 32], input: [u8; 16]) -> [u8; 32] {
     unsafe {
-        let mut out: [u8; 32] = mem::uninitialized();
-        ffi::crypto_chacha20_H(out.as_mut_ptr(), key.as_ptr(), input.as_ptr());
-        out
+        let mut out = mem::MaybeUninit::<[u8; 32]>::uninit();
+        ffi::crypto_chacha20_H(out.as_mut_ptr() as *mut u8, key.as_ptr(), input.as_ptr());
+        out.assume_init()
     }
 }
 #[cfg(test)]
