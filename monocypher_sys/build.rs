@@ -16,6 +16,7 @@ fn main() {
         // bindings for.
         .header("wrapper.h")
         .clang_arg("-I/usr/local/include")
+        .clang_arg("-L/usr/local/lib")
         .blacklist_type("max_align_t")
         // Finish the builder and generate the bindings.
         .generate()
