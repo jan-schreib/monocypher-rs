@@ -1,7 +1,7 @@
 [package]
 name = "monocypher"
-version = "0.4.0"
-authors = ["jes@schreiberconsulting.eu"]
+version = "0.4.1"
+authors = ["js@schreiberconsulting.eu"]
 description = "Bindings for the monocypher C library"
 license = "ISC"
 homepage = "https://schreiberconsulting.eu"
