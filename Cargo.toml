@@ -1,6 +1,6 @@
 [package]
 name = "monocypher"
-version = "0.3.1"
+version = "0.4.0"
 authors = ["jes@schreiberconsulting.eu"]
 description = "Bindings for the monocypher C library"
 license = "ISC"
@@ -15,4 +15,4 @@ hex = "0.4"
 
 [dependencies.monocypher-sys]
 path = "./monocypher_sys"
-version = "2.0.5"
+version = "3.1.1"

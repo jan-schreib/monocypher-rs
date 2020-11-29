@@ -46,10 +46,10 @@ fn verify_internal(a: &[u8], b: &[u8]) -> u8 {
     };
 
     match len {
-        16 => return cmp,
-        32 => return cmp,
-        64 => return cmp,
-        _ => return 1,
+        16 => cmp,
+        32 => cmp,
+        64 => cmp,
+        _ => 1,
     }
 }
 
@@ -64,7 +64,7 @@ fn verify_internal(a: &[u8], b: &[u8]) -> u8 {
 /// wipe(&mut secret);
 /// ```
 pub fn wipe(secret: &mut [u8]) {
-    unsafe { ffi::crypto_wipe(secret.as_mut_ptr() as *mut c_void, secret.len()) }
+    unsafe { ffi::crypto_wipe(secret.as_mut_ptr() as *mut c_void, secret.len() as u64) }
 }
 
 #[cfg(test)]

@@ -11,11 +11,11 @@ pub fn check(signature: [u8; 64], public_key: [u8; 32], message: &[u8]) -> Resul
             signature.as_ptr(),
             public_key.as_ptr(),
             message.as_ptr(),
-            message.len(),
+            message.len() as u64,
         ) == 0
-            {
-                return Ok(());
-            }
+        {
+            return Ok(());
+        }
         Err("Forged message detected.".to_owned())
     }
 }
@@ -27,7 +27,11 @@ impl Context {
     pub fn new(signature: [u8; 64], public_key: [u8; 32]) -> Context {
         unsafe {
             let mut ctx = mem::MaybeUninit::<ffi::crypto_check_ctx>::uninit();
-            ffi::crypto_check_init(ctx.as_mut_ptr() as *mut ffi::crypto_check_ctx, signature.as_ptr(), public_key.as_ptr());
+            ffi::crypto_check_init(
+                ctx.as_mut_ptr() as *mut _ as *mut _,
+                signature.as_ptr(),
+                public_key.as_ptr(),
+            );
             Context(ctx.assume_init())
         }
     }
@@ -35,14 +39,18 @@ impl Context {
     #[inline]
     pub fn update(&mut self, message: &[u8]) {
         unsafe {
-            ffi::crypto_check_update(&mut self.0, message.as_ptr(), message.len());
+            ffi::crypto_check_update(
+                &mut self.0 as *mut _ as *mut _,
+                message.as_ptr(),
+                message.len() as u64,
+            );
         }
     }
 
     #[inline]
     pub fn finalize(&mut self) -> Result<(), String> {
         unsafe {
-            if ffi::crypto_check_final(&mut self.0) == 0 {
+            if ffi::crypto_check_final(&mut self.0 as *mut _ as *mut _) == 0 {
                 return Ok(());
             }
             Err("Message corrupted, aborting.".to_owned())
@@ -53,7 +61,7 @@ impl Context {
 #[cfg(test)]
 mod test {
     use super::*;
-    use ::pubkey::sign;
+    use pubkey::sign;
 
     #[test]
     fn check() {
@@ -105,6 +113,9 @@ mod test {
         let ret = ctx.finalize();
 
         assert_eq!(ret.is_err(), true);
-        assert_eq!(ret.err().unwrap(), "Message corrupted, aborting.".to_owned());
+        assert_eq!(
+            ret.err().unwrap(),
+            "Message corrupted, aborting.".to_owned()
+        );
     }
 }

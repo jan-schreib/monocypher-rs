@@ -1,10 +1,10 @@
 # monocypher-rs
 
-[![dependency status](https://deps.rs/repo/github/cphrn/monocypher/status.svg)](https://deps.rs/repo/github/cphrn/monocypher)
+[![dependency status](https://deps.rs/repo/github/jan-schreib/monocypher/status.svg)](https://deps.rs/repo/github/jan-schreib/monocypher)
 
 Rust bindings for [monocypher](https://monocypher.org/)
 
-[Documentation](https://cphrn.github.io/doc/monocypher/index.html)
+[Documentation](https://docs.rs/monocypher)
 
 ToDo:
 
