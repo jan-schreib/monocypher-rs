@@ -1,11 +1,11 @@
 [package]
 name = "monocypher"
-version = "0.4.1"
+version = "0.4.2"
 authors = ["js@schreiberconsulting.eu"]
 description = "Bindings for the monocypher C library"
 license = "ISC"
 homepage = "https://schreiberconsulting.eu"
-repository = "https://github.com/jan-schreib/monocypher"
+repository = "https://github.com/jan-schreib/monocypher-rs"
 keywords = ["cryptography", "security", "encryption"]
 categories = ["cryptography"]
 
