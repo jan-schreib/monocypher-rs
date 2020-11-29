@@ -1,6 +1,6 @@
 [package]
 name = "monocypher-sys"
-version = "2.0.5"
+version = "3.1.1"
 authors = ["js@schreiberconsulting.eu"]
 description = "Bindgen generated bindings to the monocypher C library"
 homepage = "https://monocypher.org"
