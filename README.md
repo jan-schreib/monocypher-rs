@@ -1,6 +1,6 @@
 # monocypher-rs
 
-[![dependency status](https://deps.rs/repo/github/jan-schreib/monocypher/status.svg)](https://deps.rs/repo/github/jan-schreib/monocypher)
+[![dependency status](https://deps.rs/repo/github/jan-schreib/monocypher-rs/status.svg)](https://deps.rs/repo/github/jan-schreib/monocypher-rs)
 
 Rust bindings for [monocypher](https://monocypher.org/)
 
