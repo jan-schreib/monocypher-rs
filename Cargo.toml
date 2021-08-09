@@ -9,6 +9,10 @@ repository = "https://github.com/jan-schreib/monocypher-rs"
 keywords = ["cryptography", "security", "encryption"]
 categories = ["cryptography"]
 
+[features]
+default = []
+ed25519 = ["monocypher-sys/ed25519"]
+
 [dependencies]
 libc = "0.2"
 hex = "0.4"

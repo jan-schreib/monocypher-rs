@@ -7,6 +7,10 @@ homepage = "https://monocypher.org"
 keywords = ["api-bindings", "cryptography"]
 license = "ISC"
 
+[features]
+default = []
+ed25519 = []
+
 [build-dependencies]
 bindgen = "0.56"
 cc = "1.0"

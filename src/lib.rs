@@ -17,3 +17,6 @@ pub mod utils;
 
 pub mod key_exchange;
 pub mod poly1305;
+
+#[cfg(feature = "ed25519")]
+pub mod ed25519;
