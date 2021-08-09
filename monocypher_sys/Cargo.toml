@@ -9,3 +9,4 @@ license = "ISC"
 
 [build-dependencies]
 bindgen = "0.56"
+cc = "1.0"

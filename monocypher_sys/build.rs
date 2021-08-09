@@ -4,9 +4,12 @@ use std::env;
 use std::path::PathBuf;
 
 fn main() {
-    // Tell cargo to tell rustc to link the monocypher
-    // shared library.
-    println!("cargo:rustc-link-lib=monocypher");
+    // Compile monocypher from the source in the submodule.
+    cc::Build::new()
+        .file("Monocypher/src/monocypher.c")
+        .include("Monocypher/src")
+        .compile("monocypher");
+
 
     // The bindgen::Builder is the main entry point
     // to bindgen, and lets you build up options for
@@ -14,9 +17,7 @@ fn main() {
     let bindings = bindgen::Builder::default()
         // The input header we would like to generate
         // bindings for.
-        .header("wrapper.h")
-        .clang_arg("-I/usr/local/include")
-        .clang_arg("-L/usr/local/lib")
+        .header("Monocypher/src/monocypher.h")
         .blacklist_type("max_align_t")
         // Finish the builder and generate the bindings.
         .generate()
