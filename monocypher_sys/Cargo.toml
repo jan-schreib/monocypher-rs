@@ -12,5 +12,5 @@ default = []
 ed25519 = []
 
 [build-dependencies]
-bindgen = "0.56"
+bindgen = "0.59"
 cc = "1.0"
