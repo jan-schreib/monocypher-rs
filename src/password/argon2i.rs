@@ -11,7 +11,7 @@ use std::os::raw;
 #[inline]
 fn alloc_workarea(size: u32) -> Result<*mut libc::c_void, String> {
     unsafe {
-        let work_area: *mut libc::c_void = libc::calloc(1024, size as usize) as *mut libc::c_void;
+        let work_area: *mut libc::c_void = libc::calloc(1024, size as usize);
         if work_area.is_null() {
             return Err("Failed to allocate needed memory.".to_owned());
         }

@@ -63,7 +63,7 @@ impl Context {
         unsafe {
             let mut ctx = mem::MaybeUninit::<ffi::crypto_blake2b_ctx>::uninit();
             ffi::crypto_blake2b_general_init(
-                ctx.as_mut_ptr() as *mut ffi::crypto_blake2b_ctx,
+                ctx.as_mut_ptr(),
                 64,
                 key.as_ptr(),
                 key.len(),

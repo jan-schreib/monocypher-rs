@@ -38,7 +38,7 @@ impl Context {
         unsafe {
             let mut ctx = mem::MaybeUninit::<ffi::crypto_poly1305_ctx>::uninit();
             ffi::crypto_poly1305_init(
-                ctx.as_mut_ptr() as *mut ffi::crypto_poly1305_ctx,
+                ctx.as_mut_ptr(),
                 key.as_ptr(),
             );
             Context(ctx.assume_init())
