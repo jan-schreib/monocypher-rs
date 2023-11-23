@@ -16,7 +16,7 @@ fn main() {
         // The input header we would like to generate
         // bindings for.
         .header("Monocypher/src/monocypher.h")
-        .blacklist_type("max_align_t");
+        .blocklist_type("max_align_t");
 
     // Compile ed25519 and add its bindings if that feature is required.
     if cfg!(feature = "ed25519") {

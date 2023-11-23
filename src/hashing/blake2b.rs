@@ -34,9 +34,9 @@ pub fn general(data: &[u8], key: &[u8]) -> [u8; 64] {
             hash.as_mut_ptr() as *mut u8,
             64,
             key.as_ptr(),
-            key.len() as u64,
+            key.len(),
             data.as_ptr(),
-            data.len() as u64,
+            data.len(),
         );
         hash.assume_init()
     }
@@ -66,7 +66,7 @@ impl Context {
                 ctx.as_mut_ptr() as *mut ffi::crypto_blake2b_ctx,
                 64,
                 key.as_ptr(),
-                key.len() as u64,
+                key.len(),
             );
             Context(ctx.assume_init())
         }
@@ -76,7 +76,7 @@ impl Context {
     #[inline]
     pub fn update(&mut self, data: &[u8]) {
         unsafe {
-            ffi::crypto_blake2b_update(&mut self.0, data.as_ptr(), data.len() as u64);
+            ffi::crypto_blake2b_update(&mut self.0, data.as_ptr(), data.len());
         }
     }
 

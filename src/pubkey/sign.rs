@@ -25,7 +25,7 @@ pub fn sign(secret_key: [u8; 32], public_key: [u8; 32], message: &[u8]) -> [u8; 
             secret_key.as_ptr(),
             public_key.as_ptr(),
             message.as_ptr(),
-            message.len() as u64,
+            message.len(),
         );
 
         signature.assume_init()
@@ -54,7 +54,7 @@ impl Context {
             ffi::crypto_sign_update(
                 &mut self.0 as *mut _ as *mut _,
                 message.as_ptr(),
-                message.len() as u64,
+                message.len(),
             );
         }
     }

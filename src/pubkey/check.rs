@@ -11,7 +11,7 @@ pub fn check(signature: [u8; 64], public_key: [u8; 32], message: &[u8]) -> Resul
             signature.as_ptr(),
             public_key.as_ptr(),
             message.as_ptr(),
-            message.len() as u64,
+            message.len(),
         ) == 0
         {
             return Ok(());
@@ -42,7 +42,7 @@ impl Context {
             ffi::crypto_check_update(
                 &mut self.0 as *mut _ as *mut _,
                 message.as_ptr(),
-                message.len() as u64,
+                message.len(),
             );
         }
     }

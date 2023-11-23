@@ -26,7 +26,7 @@ pub fn easy(plain_text: &[u8], key: [u8; 32], nonce: [u8; 24]) -> (Vec<u8>, [u8;
             key.as_ptr(),
             nonce.as_ptr(),
             plain_text.as_ptr(),
-            plain_text.len() as u64,
+            plain_text.len(),
         );
 
         (cipher_text, mac.assume_init())
@@ -57,9 +57,9 @@ pub fn aead(plain_text: &[u8], key: [u8; 32], nonce: [u8; 24], ad: &[u8]) -> (Ve
             key.as_ptr(),
             nonce.as_ptr(),
             ad.as_ptr(),
-            ad.len() as u64,
+            ad.len(),
             plain_text.as_ptr(),
-            plain_text.len() as u64,
+            plain_text.len(),
         );
         (cipher_text, mac.assume_init())
     }

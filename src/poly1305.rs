@@ -22,7 +22,7 @@ pub fn auth(message: &[u8], key: [u8; 32]) -> [u8; 16] {
         ffi::crypto_poly1305(
             mac.as_mut_ptr() as *mut u8,
             message.as_ptr(),
-            message.len() as u64,
+            message.len(),
             key.as_ptr(),
         );
         mac.assume_init()
@@ -49,7 +49,7 @@ impl Context {
     #[inline]
     pub fn update(&mut self, message: &[u8]) {
         unsafe {
-            ffi::crypto_poly1305_update(&mut self.0, message.as_ptr(), message.len() as u64);
+            ffi::crypto_poly1305_update(&mut self.0, message.as_ptr(), message.len());
         }
     }
 

@@ -30,7 +30,7 @@ pub fn easy(
             nonce.as_ptr(),
             mac.as_ptr(),
             cipher_text.as_ptr(),
-            cipher_text.len() as u64,
+            cipher_text.len(),
         ) == 0
         {
             return Ok(plain_text);
@@ -69,9 +69,9 @@ pub fn aead(
             nonce.as_ptr(),
             mac.as_ptr(),
             ad.as_ptr(),
-            ad.len() as u64,
+            ad.len(),
             cipher_text.as_ptr(),
-            cipher_text.len() as u64,
+            cipher_text.len(),
         ) == 0
         {
             return Ok(plain_text);
