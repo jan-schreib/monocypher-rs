@@ -1,1 +1,1 @@
-pub mod argon2i;
+pub mod argon2;

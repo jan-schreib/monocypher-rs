@@ -5,7 +5,7 @@
 use ffi;
 use std::mem;
 
-/// Simple function to hash the input data.
+/// Simple function to hash the input data with the given key.
 ///
 /// # Example
 ///
@@ -15,7 +15,20 @@ use std::mem;
 /// let hash = easy("tohash".as_bytes());
 /// ```
 pub fn easy(data: &[u8]) -> [u8; 64] {
-    general(data, b"")
+    general(data)
+}
+
+/// Simple function to hash the input data with the given key.
+///
+/// # Example
+///
+/// ```
+/// use monocypher::hashing::blake2b::easy_keyed;
+///
+/// let hash = easy_keyed("tohash".as_bytes(), "key".as_bytes());
+/// ```
+pub fn easy_keyed(data: &[u8], key: &[u8]) -> [u8; 64] {
+    general_keyed(data, key)
 }
 
 /// Function to hash the input data with an additional key.
@@ -23,14 +36,14 @@ pub fn easy(data: &[u8]) -> [u8; 64] {
 /// # Example
 ///
 /// ```
-/// use monocypher::hashing::blake2b::general;
+/// use monocypher::hashing::blake2b::general_keyed;
 ///
-/// let hash = general("tohash".as_bytes(), "key".as_bytes());
+/// let hash = general_keyed("tohash".as_bytes(), "key".as_bytes());
 /// ```
-pub fn general(data: &[u8], key: &[u8]) -> [u8; 64] {
+pub fn general_keyed(data: &[u8], key: &[u8]) -> [u8; 64] {
     unsafe {
         let mut hash = mem::MaybeUninit::<[u8; 64]>::uninit();
-        ffi::crypto_blake2b_general(
+        ffi::crypto_blake2b_keyed(
             hash.as_mut_ptr() as *mut u8,
             64,
             key.as_ptr(),
@@ -42,7 +55,30 @@ pub fn general(data: &[u8], key: &[u8]) -> [u8; 64] {
     }
 }
 
+/// Function to hash the input data with an additional key.
+///
+/// # Example
+///
+/// ```
+/// use monocypher::hashing::blake2b::general;
+///
+/// let hash = general("tohash".as_bytes());
+/// ```
+pub fn general(data: &[u8]) -> [u8; 64] {
+    unsafe {
+        let mut hash = mem::MaybeUninit::<[u8; 64]>::uninit();
+        ffi::crypto_blake2b(hash.as_mut_ptr() as *mut u8, 64, data.as_ptr(), data.len());
+        hash.assume_init()
+    }
+}
+
 pub struct Context(ffi::crypto_blake2b_ctx);
+
+impl Default for Context {
+    fn default() -> Self {
+        Self::new()
+    }
+}
 
 /// Context based hashing for e.g. large inputs.
 ///
@@ -51,23 +87,27 @@ pub struct Context(ffi::crypto_blake2b_ctx);
 /// ```
 /// use monocypher::hashing::blake2b::Context;
 ///
-/// let mut ctx = Context::new("tohash".as_bytes());
+/// let mut ctx = Context::with_key("tohash".as_bytes());
 /// ctx.update("moretohash".as_bytes());
 /// let hash = ctx.finalize();
 /// ```
 impl Context {
     #[inline]
 
-    /// Initializes a new context with the given key.
-    pub fn new(key: &[u8]) -> Context {
+    /// Initializes a new context.
+    pub fn new() -> Context {
         unsafe {
             let mut ctx = mem::MaybeUninit::<ffi::crypto_blake2b_ctx>::uninit();
-            ffi::crypto_blake2b_general_init(
-                ctx.as_mut_ptr(),
-                64,
-                key.as_ptr(),
-                key.len(),
-            );
+            ffi::crypto_blake2b_init(ctx.as_mut_ptr(), 64);
+            Context(ctx.assume_init())
+        }
+    }
+
+    /// Initializes a new context with the given key.
+    pub fn with_key(key: &[u8]) -> Context {
+        unsafe {
+            let mut ctx = mem::MaybeUninit::<ffi::crypto_blake2b_ctx>::uninit();
+            ffi::crypto_blake2b_keyed_init(ctx.as_mut_ptr(), 64, key.as_ptr(), key.len());
             Context(ctx.assume_init())
         }
     }
@@ -98,7 +138,7 @@ mod test {
 
     #[test]
     fn blake2b_incremental() {
-        let mut ctx = Context::new("test".as_bytes());
+        let mut ctx = Context::with_key("test".as_bytes());
         ctx.update("TEST".as_bytes());
         let hash = ctx.finalize();
         assert_eq!(hex::encode(hash.to_vec()), "e33ee689585ebe3fc169a845482a47432c21a4134134d2f6c57d06dda4622500e73c79f3ab9d8a3728a7575ebb0f5a78bc6608db427e18cbba1ff6847e3fb6bb");
@@ -118,13 +158,13 @@ mod test {
 
     #[test]
     fn blake2b_general_len() {
-        let vec = general("TEST".as_bytes(), "test".as_bytes());
+        let vec = general_keyed("TEST".as_bytes(), "test".as_bytes());
         assert_eq!(vec.len(), 64);
     }
 
     #[test]
     fn blake2b_general_sum() {
-        let ret = general("TEST".as_bytes(), "test".as_bytes()).to_vec();
+        let ret = general_keyed("TEST".as_bytes(), "test".as_bytes()).to_vec();
         assert_eq!(hex::encode(ret), "e33ee689585ebe3fc169a845482a47432c21a4134134d2f6c57d06dda4622500e73c79f3ab9d8a3728a7575ebb0f5a78bc6608db427e18cbba1ff6847e3fb6bb");
     }
 }

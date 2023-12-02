@@ -5,29 +5,6 @@
 use ffi;
 use std::mem;
 
-/// Computes a shared key with your secret key and their public key.
-///
-/// # Example
-///
-/// ```
-/// use monocypher::key_exchange::shared;
-///
-/// let pubkey = [1u8; 32];
-/// shared([31u8; 32], pubkey);
-/// ```
-pub fn shared(secret_key: [u8; 32], their_public_key: [u8; 32]) -> [u8; 32] {
-    unsafe {
-        let mut shared_key = mem::MaybeUninit::<[u8; 32]>::uninit();
-        ffi::crypto_key_exchange(
-            shared_key.as_mut_ptr() as *mut u8,
-            secret_key.as_ptr(),
-            their_public_key.as_ptr(),
-        );
-
-        shared_key.assume_init()
-    }
-}
-
 /// Deterministically computes the public key from a random secret key.
 ///
 /// # Example
@@ -47,20 +24,6 @@ pub fn public(secret_key: [u8; 32]) -> [u8; 32] {
 
 #[cfg(test)]
 mod test {
-    #[test]
-    fn shared() {
-        let pubkey = [1u8; 32];
-        let shared_key = ::key_exchange::shared([31u8; 32], pubkey);
-
-        assert_eq!(
-            shared_key,
-            [
-                221, 154, 19, 66, 124, 44, 238, 44, 9, 242, 98, 231, 40, 23, 150, 119, 121, 116,
-                47, 199, 173, 61, 70, 53, 155, 235, 80, 11, 107, 75, 87, 110
-            ]
-        )
-    }
-
     #[test]
     fn public() {
         let secret_key = [2u8; 32];
