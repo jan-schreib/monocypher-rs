@@ -1,10 +1,10 @@
 [package]
 name = "monocypher"
-version = "0.4.2"
+version = "0.4.3"
 authors = ["js@schreiberconsulting.eu"]
 description = "Bindings for the monocypher C library"
 license = "ISC"
-homepage = "https://schreiberconsulting.eu"
+homepage = "https://github.com/jan-schreib/monocypher-rs"
 repository = "https://github.com/jan-schreib/monocypher-rs"
 keywords = ["cryptography", "security", "encryption"]
 categories = ["cryptography"]
@@ -19,7 +19,7 @@ hex = "0.4"
 
 [dependencies.monocypher-sys]
 path = "./monocypher_sys"
-version = "3.1.1"
+version = "4.0.2"
 
 [package.metadata.docs.rs]
 features = ["ed25519"]
