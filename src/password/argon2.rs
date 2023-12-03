@@ -122,7 +122,7 @@ impl Default for Config {
 
 pub struct Inputs {
     pub password: Vec<u8>,
-    pub salt: Vec<u8>,
+    salt: [u8; 16],
 }
 
 impl From<Inputs> for ffi::crypto_argon2_inputs {
@@ -133,6 +133,12 @@ impl From<Inputs> for ffi::crypto_argon2_inputs {
             pass_size: inputs.password.len() as u32,
             salt_size: inputs.salt.len() as u32,
         }
+    }
+}
+
+impl Inputs {
+    pub fn salt(&mut self, salt: [u8; 16]) {
+        self.salt = salt;
     }
 }
 
@@ -207,39 +213,39 @@ mod test {
     use hex;
 
     #[test]
-    fn argon2i() {
-        let pass = hex::encode(easy("pass".as_bytes(), "salt".as_bytes()).unwrap());
+    fn argon2() {
+        let pass = hex::encode(easy("pass".as_bytes(), "saltsaltsaltsalt".as_bytes()).unwrap());
         assert_eq!(
             pass,
-            "ddd464eaa16219e5aabec0f7a8bfbd675f1e9ec0663f1b8e8102c7eed2cde478"
+            "d123fb893e3fc31c09ea0fa61ec4a66eaeac5b229c637f9d2ad5377be1246591"
         );
     }
 
     #[test]
-    fn argon2i_fail() {
-        let pass = hex::encode(easy("pass".as_bytes(), "tlas".as_bytes()).unwrap());
+    fn argon2_fail() {
+        let pass = hex::encode(easy("pass".as_bytes(), "tlassaltsaltsalt".as_bytes()).unwrap());
         assert_ne!(pass, "ddd18e8102c7eed2cde478");
     }
 
     #[test]
-    fn argon2i_general() {
+    fn argon2_general() {
         let inputs = Inputs {
             password: "pass".as_bytes().into(),
-            salt: "salt".as_bytes().into(),
+            salt: [1; 16],
         };
 
         let pass = hex::encode(general(Default::default(), inputs, None).unwrap());
         assert_eq!(
             pass,
-            "0a36b76bd9e78f4d9aefa1c79dd15b8ee3c1c71d5034b9696e39dbbc0aade017"
+            "02949d317bd3bf4944df49f04cf5881ba10aa972b0c1721014634c66c1f63d09"
         );
     }
 
     #[test]
-    fn argon2i_general_key_fail() {
+    fn argon2_general_key_fail() {
         let inputs = Inputs {
             password: "pass".as_bytes().into(),
-            salt: "salt".as_bytes().into(),
+            salt: [1; 16],
         };
         let pass = hex::encode(general(Default::default(), inputs, None).unwrap());
         assert_ne!(
@@ -249,10 +255,10 @@ mod test {
     }
 
     #[test]
-    fn argon2i_general_ad_fail() {
+    fn argon2_general_ad_fail() {
         let inputs = Inputs {
             password: "pass".as_bytes().into(),
-            salt: "salt".as_bytes().into(),
+            salt: [1; 16],
         };
         let pass = hex::encode(general(Default::default(), inputs, None).unwrap());
         assert_ne!(
