@@ -1,4 +1,4 @@
-//! Argon2i key derivation function
+//! Argon2 key derivation function
 //!
 //! [Official documentation](https://monocypher.org/manual/argon2)
 
@@ -7,7 +7,7 @@ use libc::{self};
 use std::mem;
 use std::os::raw;
 
-// Allocates the workarea that is used for the argon2i key derivation function.
+// Allocates the workarea that is used for the argon2 key derivation function.
 #[inline]
 fn alloc_workarea(size: u32) -> Result<*mut libc::c_void, String> {
     unsafe {
@@ -83,9 +83,9 @@ pub enum ArgonAlgorithm {
 impl From<ArgonAlgorithm> for u32 {
     fn from(algorithm: ArgonAlgorithm) -> Self {
         match algorithm {
-            ArgonAlgorithm::Argon2d => 0,
-            ArgonAlgorithm::Argon2i => 1,
-            ArgonAlgorithm::Argon2id => 2,
+            ArgonAlgorithm::Argon2d => ffi::CRYPTO_ARGON2_D,
+            ArgonAlgorithm::Argon2i => ffi::CRYPTO_ARGON2_I,
+            ArgonAlgorithm::Argon2id => ffi::CRYPTO_ARGON2_ID,
         }
     }
 }
@@ -122,7 +122,7 @@ impl Default for Config {
 
 pub struct Inputs {
     pub password: Vec<u8>,
-    salt: [u8; 16],
+    pub salt: [u8; 16],
 }
 
 impl From<Inputs> for ffi::crypto_argon2_inputs {
@@ -133,12 +133,6 @@ impl From<Inputs> for ffi::crypto_argon2_inputs {
             pass_size: inputs.password.len() as u32,
             salt_size: inputs.salt.len() as u32,
         }
-    }
-}
-
-impl Inputs {
-    pub fn salt(&mut self, salt: [u8; 16]) {
-        self.salt = salt;
     }
 }
 
@@ -168,7 +162,7 @@ impl From<Extras> for ffi::crypto_argon2_extras {
 ///
 /// let inputs = Inputs {
 ///     password: "pass".as_bytes().into(),
-///     salt: "salt".as_bytes().into(),
+///     salt: [1u8; 16],
 /// };
 ///
 /// general(Default::default(), inputs, None).unwrap();
@@ -180,6 +174,13 @@ pub fn general(config: Config, inputs: Inputs, extras: Option<Extras>) -> Result
     };
 
     unsafe {
+        let inputs = ffi::crypto_argon2_inputs {
+            pass: inputs.password.as_ptr(),
+            salt: inputs.salt.as_ptr(),
+            pass_size: inputs.password.len() as u32,
+            salt_size: inputs.salt.len() as u32,
+        };
+
         let mut hash = mem::MaybeUninit::<[u8; 32]>::uninit();
 
         let extras = if let Some(extras) = extras {
@@ -196,9 +197,9 @@ pub fn general(config: Config, inputs: Inputs, extras: Option<Extras>) -> Result
         ffi::crypto_argon2(
             hash.as_mut_ptr() as *mut u8,
             hash.assume_init().len() as u32,
-            work_area,
+            work_area as *mut raw::c_void,
             config.into(),
-            inputs.into(),
+            inputs,
             extras,
         );
 
@@ -230,21 +231,21 @@ mod test {
     #[test]
     fn argon2_general() {
         let inputs = Inputs {
-            password: "pass".as_bytes().into(),
+            password: "password".as_bytes().to_vec(),
             salt: [1; 16],
         };
 
         let pass = hex::encode(general(Default::default(), inputs, None).unwrap());
         assert_eq!(
             pass,
-            "02949d317bd3bf4944df49f04cf5881ba10aa972b0c1721014634c66c1f63d09"
+            "9982c8c3eadaca16a413d2c0a1c8e828abae6e4d78e976bcf5c207d44b17dbb4"
         );
     }
 
     #[test]
     fn argon2_general_key_fail() {
         let inputs = Inputs {
-            password: "pass".as_bytes().into(),
+            password: "password".as_bytes().to_vec(),
             salt: [1; 16],
         };
         let pass = hex::encode(general(Default::default(), inputs, None).unwrap());
@@ -257,7 +258,7 @@ mod test {
     #[test]
     fn argon2_general_ad_fail() {
         let inputs = Inputs {
-            password: "pass".as_bytes().into(),
+            password: "password".as_bytes().to_vec(),
             salt: [1; 16],
         };
         let pass = hex::encode(general(Default::default(), inputs, None).unwrap());
