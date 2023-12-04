@@ -1,6 +1,6 @@
 [package]
 name = "monocypher"
-version = "0.4.3"
+version = "0.4.4"
 authors = ["js@schreiberconsulting.eu"]
 description = "Bindings for the monocypher C library"
 license = "ISC"
