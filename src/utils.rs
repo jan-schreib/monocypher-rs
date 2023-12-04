@@ -2,7 +2,7 @@
 //!
 //! [Official documentation](https://monocypher.org/manual/wipe)
 
-use ffi;
+use monocypher_sys as ffi;
 use std::os::raw::c_void;
 
 /// Constant time comparison of two equal sized buffers.
@@ -70,6 +70,7 @@ pub fn wipe(secret: &mut [u8]) {
 #[cfg(test)]
 mod test {
     use super::*;
+    use crate::utils;
 
     #[test]
     fn wipe() {
@@ -83,7 +84,7 @@ mod test {
             assert_eq!(a[i], i as u8);
         }
 
-        ::utils::wipe(&mut a);
+        utils::wipe(&mut a);
 
         for i in 0..a.len() {
             assert_eq!(a[i], 0);

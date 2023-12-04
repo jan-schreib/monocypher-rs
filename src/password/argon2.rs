@@ -2,7 +2,7 @@
 //!
 //! [Official documentation](https://monocypher.org/manual/argon2)
 
-use ffi;
+use monocypher_sys as ffi;
 use libc::{self};
 use std::mem;
 use std::os::raw;

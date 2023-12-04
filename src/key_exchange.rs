@@ -2,7 +2,7 @@
 //!
 //! //! [Official documentation](https://monocypher.org/manual/key_exchange)
 
-use ffi;
+use monocypher_sys as ffi;
 use std::mem;
 
 /// Deterministically computes the public key from a random secret key.
@@ -24,10 +24,12 @@ pub fn public(secret_key: [u8; 32]) -> [u8; 32] {
 
 #[cfg(test)]
 mod test {
+    use crate::key_exchange;
+
     #[test]
     fn public() {
         let secret_key = [2u8; 32];
-        let public_key = ::key_exchange::public(secret_key);
+        let public_key = key_exchange::public(secret_key);
 
         assert_eq!(
             public_key,

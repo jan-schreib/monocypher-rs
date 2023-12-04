@@ -2,7 +2,7 @@
 //!
 //! [Official documentation](https://monocypher.org/manual/hash)
 
-use ffi;
+use monocypher_sys as ffi;
 use std::mem;
 
 /// Simple function to hash the input data with the given key.

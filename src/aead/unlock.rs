@@ -1,6 +1,6 @@
 //! Authenticated decryption w/o additional data
 
-use ffi;
+use monocypher_sys as ffi;
 
 /// Decrypt ciphertext with additional data.
 ///

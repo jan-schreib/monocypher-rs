@@ -1,4 +1,5 @@
 use std::mem;
+use monocypher_sys as ffi;
 
 pub struct KeyPair {
     pub secret_key: [u8; 64],

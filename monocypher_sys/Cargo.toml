@@ -6,6 +6,7 @@ description = "Bindgen generated bindings to the monocypher C library"
 homepage = "https://monocypher.org"
 keywords = ["api-bindings", "cryptography"]
 license = "ISC"
+edition = "2021"
 
 [features]
 default = []

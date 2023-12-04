@@ -1,6 +1,6 @@
 //! Authenticated encryption w/o additional data
 
-use ffi;
+use monocypher_sys as ffi;
 use std::mem;
 
 /// Encrypt and authenticate plaintext with additional data.

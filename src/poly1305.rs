@@ -2,7 +2,7 @@
 //!
 //! [Official documentation](https://monocypher.org/manual/advanced/poly1305)
 
-use ffi;
+use monocypher_sys as ffi;
 use std::mem;
 
 /// Produces a message authentication code for the given message and authentication key.
@@ -63,12 +63,14 @@ impl Context {
 
 #[cfg(test)]
 mod test {
+    use crate::poly1305;
+
     use super::*;
 
     #[test]
     fn auth() {
         let key = [1u8; 32];
-        let mac = ::poly1305::auth("test".as_bytes(), key);
+        let mac = poly1305::auth("test".as_bytes(), key);
         assert_eq!(
             mac,
             [20, 62, 33, 196, 79, 94, 80, 79, 78, 94, 80, 79, 78, 94, 80, 79]

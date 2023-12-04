@@ -8,6 +8,7 @@ homepage = "https://github.com/jan-schreib/monocypher-rs"
 repository = "https://github.com/jan-schreib/monocypher-rs"
 keywords = ["cryptography", "security", "encryption"]
 categories = ["cryptography"]
+edition = "2021"
 
 [features]
 default = []
