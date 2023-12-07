@@ -17,6 +17,7 @@ ed25519 = ["monocypher-sys/ed25519"]
 [dependencies]
 libc = "0.2"
 hex = "0.4"
+thiserror = "1.0.50"
 
 [dependencies.monocypher-sys]
 path = "./monocypher_sys"
