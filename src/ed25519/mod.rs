@@ -4,6 +4,13 @@
 
 use monocypher_sys as ffi;
 use std::mem;
+use thiserror::Error;
+
+#[derive(Debug, Error)]
+pub enum Error {
+    #[error("Signature check failed!")]
+    Signature,
+}
 
 #[derive(Debug)]
 pub struct KeyPair {
@@ -13,7 +20,7 @@ pub struct KeyPair {
 
 impl KeyPair {
     /// Computes the public key of the specified secret key.
-    pub fn generate_key_pair(mut seed: [u8; 32]) -> KeyPair {
+    pub fn generate_key_pair(mut seed: [u8; 32]) -> Self {
         let mut secret_key = [0; 64];
         let mut public_key = [0; 32];
         unsafe {
@@ -24,16 +31,14 @@ impl KeyPair {
             );
         }
 
-        KeyPair {
+        Self {
             secret_key,
             public_key,
         }
     }
 }
 
-/// Signs a message with a secret_key.
-/// The public key is optional, and will be recomputed if not provided.
-/// This recomputation doubles the execution time.
+/// Signs a message with a secret_key
 pub fn sign(secret_key: [u8; 64], message: &[u8]) -> [u8; 64] {
     unsafe {
         let mut signature = mem::MaybeUninit::<[u8; 64]>::uninit();
@@ -48,7 +53,8 @@ pub fn sign(secret_key: [u8; 64], message: &[u8]) -> [u8; 64] {
     }
 }
 
-pub fn check(signature: [u8; 64], public_key: [u8; 32], message: &[u8]) -> Result<(), String> {
+/// Checks a signature with the provided public key
+pub fn check(signature: [u8; 64], public_key: [u8; 32], message: &[u8]) -> Result<(), Error> {
     unsafe {
         if ffi::crypto_ed25519_check(
             signature.as_ptr(),
@@ -59,7 +65,7 @@ pub fn check(signature: [u8; 64], public_key: [u8; 32], message: &[u8]) -> Resul
         {
             return Ok(());
         }
-        Err("Forged message detected.".to_owned())
+        Err(Error::Signature)
     }
 }
 

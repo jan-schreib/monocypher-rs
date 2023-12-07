@@ -1,5 +1,12 @@
 use monocypher_sys as ffi;
 use std::mem;
+use thiserror::Error;
+
+#[derive(Debug, Error)]
+pub enum Error {
+    #[error("Signature check failed!")]
+    Signature,
+}
 
 #[derive(Debug)]
 pub struct KeyPair {
@@ -7,25 +14,27 @@ pub struct KeyPair {
     pub public_key: [u8; 32],
 }
 
-pub fn generate_key_pair(mut seed: [u8; 32]) -> KeyPair {
-    let mut secret_key = [0; 64];
-    let mut public_key = [0; 32];
+impl KeyPair {
+    pub fn generate_key_pair(mut seed: [u8; 32]) -> Self {
+        let mut secret_key = [0; 64];
+        let mut public_key = [0; 32];
 
-    unsafe {
-        ffi::crypto_eddsa_key_pair(
-            secret_key.as_mut_ptr(),
-            public_key.as_mut_ptr(),
-            seed.as_mut_ptr(),
-        )
-    }
+        unsafe {
+            ffi::crypto_eddsa_key_pair(
+                secret_key.as_mut_ptr(),
+                public_key.as_mut_ptr(),
+                seed.as_mut_ptr(),
+            )
+        }
 
-    KeyPair {
-        secret_key,
-        public_key,
+        Self {
+            secret_key,
+            public_key,
+        }
     }
 }
 
-pub fn check(signature: [u8; 64], public_key: [u8; 32], message: &[u8]) -> Result<(), String> {
+pub fn check(signature: [u8; 64], public_key: [u8; 32], message: &[u8]) -> Result<(), Error> {
     unsafe {
         if ffi::crypto_eddsa_check(
             signature.as_ptr(),
@@ -36,7 +45,7 @@ pub fn check(signature: [u8; 64], public_key: [u8; 32], message: &[u8]) -> Resul
         {
             return Ok(());
         }
-        Err("Forged message detected.".to_owned())
+        Err(Error::Signature)
     }
 }
 
@@ -57,11 +66,11 @@ pub fn sign(secret_key: [u8; 64], message: &[u8]) -> [u8; 64] {
 
 #[cfg(test)]
 mod test {
-    use crate::pubkey::{check, generate_key_pair, sign};
+    use crate::pubkey::{check, sign, KeyPair};
 
     #[test]
     fn sign_test() {
-        let keypair = generate_key_pair([0; 32]);
+        let keypair = KeyPair::generate_key_pair([0; 32]);
 
         let sig = sign(keypair.secret_key, "test".as_bytes());
 
@@ -83,7 +92,7 @@ mod test {
 
     #[test]
     fn check_valid() {
-        let keypair = generate_key_pair([0; 32]);
+        let keypair = KeyPair::generate_key_pair([0; 32]);
 
         let sig = sign(keypair.secret_key, "test".as_bytes());
 
@@ -94,7 +103,7 @@ mod test {
 
     #[test]
     fn check_forged() {
-        let keypair = generate_key_pair([0; 32]);
+        let keypair = KeyPair::generate_key_pair([0; 32]);
 
         let sig = sign(keypair.secret_key, "test".as_bytes());
 
